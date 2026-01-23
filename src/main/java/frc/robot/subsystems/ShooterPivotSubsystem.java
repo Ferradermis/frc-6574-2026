@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.ArmConfig;
@@ -111,9 +110,29 @@ public class ShooterPivotSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     pivot.simIterate();
   }
-@AutoLogOutput
-  public Angle getAngleSetPoint(){
+
+  @AutoLogOutput
+  public Angle getAngleSetPoint() {
     return shooterPivotMotorController.getMechanismPositionSetpoint().orElse(null);
   }
-  
+
+  public Angle getAngle() {
+    return shooterPivotInputs.pivotPosition;
+  }
+
+  public AngularVelocity getVelocity() {
+    return shooterPivotInputs.pivotVelocity;
+  }
+
+  public Angle getSetpointAngle() {
+    return shooterPivotInputs.pivotDesiredPosition;
+  }
+
+  public Voltage getVoltage() {
+    return shooterPivotInputs.pivotAppliedVolts;
+  }
+
+  public Current getCurrent() {
+    return shooterPivotInputs.pivotCurrent;
+  }
 }
