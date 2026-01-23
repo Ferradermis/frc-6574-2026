@@ -175,10 +175,10 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     updateRightInputs();
-    Logger.processInputs("Right Shooter", shooterRightInputs);
+    Logger.processInputs("RobotState/RightShooter", shooterRightInputs);
     rightShooter.updateTelemetry();
     updateLeftInputs();
-    Logger.processInputs("Left Shooter", shooterLeftInputs);
+    Logger.processInputs("RobotState/LeftShooter", shooterLeftInputs);
     leftShooter.updateTelemetry();
   }
 
