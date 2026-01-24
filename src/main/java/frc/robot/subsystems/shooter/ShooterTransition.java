@@ -1,15 +1,17 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -21,6 +23,8 @@ import org.littletonrobotics.junction.Logger;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.config.MechanismPositionConfig;
+import yams.mechanisms.config.MechanismPositionConfig.Plane;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
@@ -29,7 +33,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class ShooterTransition extends SubsystemBase {
 
   double kP = 50;
   double kI = 0;
@@ -37,6 +41,20 @@ public class ShooterSubsystem extends SubsystemBase {
   double kS = 0;
   double kV = 0;
   double kA = 0;
+
+  private MechanismPositionConfig shooterLeftPositionConfig =
+      new MechanismPositionConfig()
+          .withMaxRobotHeight(Meters.of(Meters.convertFrom(29.47, Inches)))
+          .withMaxRobotLength(Meters.of(Meters.convertFrom(27.5, Inches)))
+          .withMovementPlane(Plane.XY)
+          .withRelativePosition(new Translation3d(0.143, 0, 0.3195)); // TODO: Get Real position
+
+  private MechanismPositionConfig shooterRightPositionConfig =
+      new MechanismPositionConfig()
+          .withMaxRobotHeight(Meters.of(Meters.convertFrom(29.47, Inches)))
+          .withMaxRobotLength(Meters.of(Meters.convertFrom(27.5, Inches)))
+          .withMovementPlane(Plane.XZ)
+          .withRelativePosition(new Translation3d(0.143, 0, 0.3195)); // TODO: Get Real position
 
   private SmartMotorControllerConfig leftConfig =
       new SmartMotorControllerConfig(this)
@@ -50,7 +68,7 @@ public class ShooterSubsystem extends SubsystemBase {
           .withFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
           .withSimFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
           // Telemetry name and verbosity level
-          .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
+          .withTelemetry("ShooterTransitionLeftMotor", TelemetryVerbosity.HIGH)
           // Gearing from the motor rotor to final shaft.
           // In this example GearBox.fromReductionStages(3,4) is the same as
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
@@ -74,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
           .withFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
           .withSimFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
           // Telemetry name and verbosity level
-          .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
+          .withTelemetry("ShooterTransitionRightMotor", TelemetryVerbosity.HIGH)
           // Gearing from the motor rotor to final shaft.
           // In this example GearBox.fromReductionStages(3,4) is the same as
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
@@ -87,18 +105,20 @@ public class ShooterSubsystem extends SubsystemBase {
           .withStatorCurrentLimit(Amps.of(40));
 
   @AutoLog
-  public static class ShooterInputs {
+  public static class ShooterTransitionInputs {
     public AngularVelocity velocity = DegreesPerSecond.of(0);
     public AngularVelocity setpoint = DegreesPerSecond.of(0);
     public Voltage volts = Volts.of(0);
     public Current current = Amps.of(0);
   }
 
-  private final ShooterInputsAutoLogged shooterRightInputs = new ShooterInputsAutoLogged();
-  private final ShooterInputsAutoLogged shooterLeftInputs = new ShooterInputsAutoLogged();
+  private final ShooterTransitionInputsAutoLogged shooterRightInputs =
+      new ShooterTransitionInputsAutoLogged();
+  private final ShooterTransitionInputsAutoLogged shooterLeftInputs =
+      new ShooterTransitionInputsAutoLogged();
 
-  private TalonFX leftMotor = new TalonFX(0);
-  private TalonFX rightMotor = new TalonFX(0);
+  private TalonFX leftMotor = new TalonFX(17);
+  private TalonFX rightMotor = new TalonFX(18);
 
   private SmartMotorController leftMotorController =
       new TalonFXWrapper(leftMotor, DCMotor.getKrakenX60(1), leftConfig);
@@ -114,7 +134,8 @@ public class ShooterSubsystem extends SubsystemBase {
           // Maximum speed of the shooter.
           .withUpperSoftLimit(RPM.of(1000))
           // Telemetry name and verbosity for the shooter.
-          .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+          .withTelemetry("ShooterTransitionLeftMech", TelemetryVerbosity.HIGH)
+          .withMechanismPositionConfig(shooterLeftPositionConfig);
 
   private FlyWheelConfig rightShooterConfig =
       new FlyWheelConfig(rightMotorController)
@@ -125,20 +146,18 @@ public class ShooterSubsystem extends SubsystemBase {
           // Maximum speed of the shooter.
           .withUpperSoftLimit(RPM.of(1000))
           // Telemetry name and verbosity for the shooter.
-          .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+          .withTelemetry("ShooterTransitionRightMech", TelemetryVerbosity.HIGH)
+          .withMechanismPositionConfig(shooterRightPositionConfig);
 
   private FlyWheel leftShooter = new FlyWheel(leftShooterConfig);
   private FlyWheel rightShooter = new FlyWheel(rightShooterConfig);
 
-  private void updateRightInputs() {
+  private void updateInputs() {
     shooterRightInputs.velocity = rightShooter.getSpeed();
     shooterRightInputs.setpoint =
         rightMotorController.getMechanismSetpointVelocity().orElse(RPM.of(0));
     shooterRightInputs.volts = rightMotorController.getVoltage();
     shooterRightInputs.current = rightMotorController.getStatorCurrent();
-  }
-
-  public void updateLeftInputs() {
     shooterLeftInputs.velocity = leftShooter.getSpeed();
     shooterLeftInputs.setpoint =
         leftMotorController.getMechanismSetpointVelocity().orElse(RPM.of(0));
@@ -170,15 +189,14 @@ public class ShooterSubsystem extends SubsystemBase {
     return leftShooter.set(dutyCycle);
   }
 
-  public ShooterSubsystem() {}
+  public ShooterTransition() {}
 
   @Override
   public void periodic() {
-    updateRightInputs();
-    Logger.processInputs("RobotState/RightShooter", shooterRightInputs);
+    updateInputs();
+    Logger.processInputs("RobotState/ShooterTransitionRight", shooterRightInputs);
     rightShooter.updateTelemetry();
-    updateLeftInputs();
-    Logger.processInputs("RobotState/LeftShooter", shooterLeftInputs);
+    Logger.processInputs("RobotState/ShooterTransitionLeft", shooterLeftInputs);
     leftShooter.updateTelemetry();
   }
 
