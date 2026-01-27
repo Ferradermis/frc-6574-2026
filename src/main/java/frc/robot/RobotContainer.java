@@ -20,12 +20,20 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.intake.IntakeFuelRamp;
+import frc.robot.subsystems.intake.IntakeMainRoller;
+import frc.robot.subsystems.intake.IntakePivot;
+import frc.robot.subsystems.intake.IntakeStaticRoller;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterPivot;
+import frc.robot.subsystems.shooter.ShooterTransition;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -42,6 +50,14 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final IntakeFuelRamp fuelRamp;
+  private final IntakeMainRoller intakeMainRoller;
+  private final IntakePivot intakePivot;
+  private final IntakeStaticRoller intakeStaticRoller;
+  private final Shooter shooter;
+  private final ShooterPivot shooterPivot;
+  private final ShooterTransition shooterTransition;
+  private final Transition transition;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -68,6 +84,14 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOLimelight(camera0Name, drive::getRotation),
                 new VisionIOLimelight(camera1Name, drive::getRotation));
+        fuelRamp = new IntakeFuelRamp();
+        intakeMainRoller = new IntakeMainRoller();
+        intakePivot = new IntakePivot();
+        intakeStaticRoller = new IntakeStaticRoller();
+        shooter = new Shooter();
+        shooterPivot = new ShooterPivot();
+        shooterTransition = new ShooterTransition();
+        transition = new Transition();
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
         // implementations
@@ -101,6 +125,14 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+        fuelRamp = new IntakeFuelRamp();
+        intakeMainRoller = new IntakeMainRoller();
+        intakePivot = new IntakePivot();
+        intakeStaticRoller = new IntakeStaticRoller();
+        shooter = new Shooter();
+        shooterPivot = new ShooterPivot();
+        shooterTransition = new ShooterTransition();
+        transition = new Transition();
         break;
 
       default:
@@ -113,6 +145,14 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        fuelRamp = new IntakeFuelRamp();
+        intakeMainRoller = new IntakeMainRoller();
+        intakePivot = new IntakePivot();
+        intakeStaticRoller = new IntakeStaticRoller();
+        shooter = new Shooter();
+        shooterPivot = new ShooterPivot();
+        shooterTransition = new ShooterTransition();
+        transition = new Transition();
         break;
     }
 
