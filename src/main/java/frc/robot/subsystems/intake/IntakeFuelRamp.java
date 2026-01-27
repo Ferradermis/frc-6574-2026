@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.MechanismPositionConfig;
@@ -110,17 +110,14 @@ public class IntakeFuelRamp extends SubsystemBase {
     return ramp.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   }
 
-  public LoggedMechanism2d getGeneratedMechanism2d() {
-    return new LoggedMechanism2d(
-        ramp.getMechanismLigament().getLineWeight(),
-        ramp.getMechanismLigament().getLength(),
-        ramp.getMechanismLigament().getColor());
+  public LoggedMechanismLigament2d getGeneratedMechanism2d() {
+    return new LoggedMechanismLigament2d(ramp.getName(), ramp.getMechanismLigament().getLength(), ramp.getMechanismLigament().getAngle());
   }
 
   @Override
   public void periodic() {
     updateInputs();
-    Logger.recordOutput("Mech2D/IntakeFuelRamp", getGeneratedMechanism2d());
+    //Logger.recordOutput("Mech2D/IntakeFuelRamp", getGeneratedMechanism2d());
     Logger.processInputs("RobotState/IntakeRamp", intakeRampInputs);
     ramp.updateTelemetry();
   }
