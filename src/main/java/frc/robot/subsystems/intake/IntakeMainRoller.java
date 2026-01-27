@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -121,9 +122,17 @@ public class IntakeMainRoller extends SubsystemBase {
     return mainRoller.set(dutyCycle);
   }
 
+  public LoggedMechanism2d getGeneratedMechanism2d() {
+    return new LoggedMechanism2d(
+        mainRoller.getMechanismLigament().getLineWeight(),
+        mainRoller.getMechanismLigament().getLength(),
+        mainRoller.getMechanismLigament().getColor());
+  }
+
   @Override
   public void periodic() {
     updateInputs();
+    Logger.recordOutput("Mech2D/IntakeMainRoller", getGeneratedMechanism2d());
     Logger.processInputs("RobotState/IntakeMainRoller", mainRollerInputs);
     mainRoller.updateTelemetry();
   }

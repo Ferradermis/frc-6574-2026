@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.MechanismPositionConfig;
@@ -110,9 +112,17 @@ public class ShooterPivot extends SubsystemBase {
     return pivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   }
 
+  public LoggedMechanism2d getGeneratedMechanism2d() {
+    return new LoggedMechanism2d(
+        pivot.getMechanismLigament().getLineWeight(),
+        pivot.getMechanismLigament().getLength(),
+        pivot.getMechanismLigament().getColor());
+  }
+
   @Override
   public void periodic() {
     updateInputs();
+    Logger.recordOutput("Mech2D/ShooterPivot", getGeneratedMechanism2d());
     Logger.processInputs("RobotState/ShooterPivot", shooterPivotInputs);
     pivot.updateTelemetry();
   }

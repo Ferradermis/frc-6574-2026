@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -189,11 +191,25 @@ public class ShooterTransition extends SubsystemBase {
     return leftShooter.set(dutyCycle);
   }
 
-  public ShooterTransition() {}
+  public LoggedMechanism2d getLeftShooterGeneratedMechanism2d() {
+    return new LoggedMechanism2d(
+        leftShooter.getMechanismLigament().getLineWeight(),
+        leftShooter.getMechanismLigament().getLength(),
+        leftShooter.getMechanismLigament().getColor());
+  }
+
+  public LoggedMechanism2d getRightShooterGeneratedMechanism2d() {
+    return new LoggedMechanism2d(
+        rightShooter.getMechanismLigament().getLineWeight(),
+        rightShooter.getMechanismLigament().getLength(),
+        rightShooter.getMechanismLigament().getColor());
+  }
 
   @Override
   public void periodic() {
     updateInputs();
+    Logger.recordOutput("Mech2D/LeftTransition", getLeftShooterGeneratedMechanism2d());
+    Logger.recordOutput("Mech2D/RightTransition", getRightShooterGeneratedMechanism2d());
     Logger.processInputs("RobotState/ShooterTransitionRight", shooterRightInputs);
     rightShooter.updateTelemetry();
     Logger.processInputs("RobotState/ShooterTransitionLeft", shooterLeftInputs);
