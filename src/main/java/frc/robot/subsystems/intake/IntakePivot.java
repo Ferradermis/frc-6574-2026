@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.MechanismPositionConfig;
@@ -110,17 +110,18 @@ public class IntakePivot extends SubsystemBase {
     return pivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   }
 
-  public LoggedMechanism2d getGeneratedMechanism2d() {
-    return new LoggedMechanism2d(
-        pivot.getMechanismLigament().getLineWeight(),
+  public LoggedMechanismLigament2d getGeneratedMechanism2d() {
+    return new LoggedMechanismLigament2d(
+        pivot.getName(),
         pivot.getMechanismLigament().getLength(),
+        pivot.getMechanismLigament().getAngle(),
+        pivot.getMechanismLigament().getLineWeight(),
         pivot.getMechanismLigament().getColor());
   }
 
   @Override
   public void periodic() {
     updateInputs();
-    Logger.recordOutput("Mech2D/IntakePivot", getGeneratedMechanism2d());
     Logger.processInputs("RobotState/IntakePivot", intakePivotInputs);
     pivot.updateTelemetry();
   }

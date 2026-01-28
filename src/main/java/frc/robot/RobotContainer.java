@@ -50,14 +50,15 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
-  private final IntakeFuelRamp fuelRamp;
-  private final IntakeMainRoller intakeMainRoller;
-  private final IntakePivot intakePivot;
-  private final IntakeStaticRoller intakeStaticRoller;
-  private final Shooter shooter;
-  private final ShooterPivot shooterPivot;
-  private final ShooterTransition shooterTransition;
-  private final Transition transition;
+  public static IntakeFuelRamp fuelRamp;
+  public static IntakeMainRoller intakeMainRoller;
+  public static IntakePivot intakePivot;
+  public static IntakeStaticRoller intakeStaticRoller;
+  public static Shooter shooter;
+  public static ShooterPivot shooterPivot;
+  public static ShooterTransition shooterTransition;
+  public static Transition transition;
+  public static RobotSim sim;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -92,6 +93,7 @@ public class RobotContainer {
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
         transition = new Transition();
+        sim = new RobotSim();
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
         // implementations
@@ -133,6 +135,7 @@ public class RobotContainer {
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
         transition = new Transition();
+        sim = new RobotSim();
         break;
 
       default:
@@ -153,6 +156,7 @@ public class RobotContainer {
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
         transition = new Transition();
+        sim = new RobotSim();
         break;
     }
 

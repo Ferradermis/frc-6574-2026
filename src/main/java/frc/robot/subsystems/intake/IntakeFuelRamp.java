@@ -111,13 +111,17 @@ public class IntakeFuelRamp extends SubsystemBase {
   }
 
   public LoggedMechanismLigament2d getGeneratedMechanism2d() {
-    return new LoggedMechanismLigament2d(ramp.getName(), ramp.getMechanismLigament().getLength(), ramp.getMechanismLigament().getAngle());
+    return new LoggedMechanismLigament2d(
+        ramp.getName(),
+        ramp.getMechanismLigament().getLength(),
+        ramp.getMechanismLigament().getAngle(),
+        ramp.getMechanismLigament().getLineWeight(),
+        ramp.getMechanismLigament().getColor());
   }
 
   @Override
   public void periodic() {
     updateInputs();
-    //Logger.recordOutput("Mech2D/IntakeFuelRamp", getGeneratedMechanism2d());
     Logger.processInputs("RobotState/IntakeRamp", intakeRampInputs);
     ramp.updateTelemetry();
   }

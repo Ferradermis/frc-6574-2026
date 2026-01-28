@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -188,25 +188,27 @@ public class Shooter extends SubsystemBase {
     return leftShooter.set(dutyCycle);
   }
 
-  public LoggedMechanism2d getLeftShooterGeneratedMechanism2d() {
-    return new LoggedMechanism2d(
-        leftShooter.getMechanismLigament().getLineWeight(),
+  public LoggedMechanismLigament2d getLeftShooterGeneratedMechanism2d() {
+    return new LoggedMechanismLigament2d(
+        leftShooter.getName(),
         leftShooter.getMechanismLigament().getLength(),
+        leftShooter.getMechanismLigament().getAngle(),
+        leftShooter.getMechanismLigament().getLineWeight(),
         leftShooter.getMechanismLigament().getColor());
   }
 
-  public LoggedMechanism2d getRightShooterGeneratedMechanism2d() {
-    return new LoggedMechanism2d(
-        rightShooter.getMechanismLigament().getLineWeight(),
+  public LoggedMechanismLigament2d getRightShooterGeneratedMechanism2d() {
+    return new LoggedMechanismLigament2d(
+        rightShooter.getName(),
         rightShooter.getMechanismLigament().getLength(),
+        rightShooter.getMechanismLigament().getAngle(),
+        rightShooter.getMechanismLigament().getLineWeight(),
         rightShooter.getMechanismLigament().getColor());
   }
 
   @Override
   public void periodic() {
     updateInputs();
-    Logger.recordOutput("Mech2D/LeftShooter", getLeftShooterGeneratedMechanism2d());
-    Logger.recordOutput("Mech2D/RightShooter", getRightShooterGeneratedMechanism2d());
     Logger.processInputs("RobotState/ShooterRight", shooterRightInputs);
     rightShooter.updateTelemetry();
     Logger.processInputs("RobotState/ShooterLeft", shooterLeftInputs);
