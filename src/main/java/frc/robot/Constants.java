@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -28,4 +31,8 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+  public static final Pose3d HUB_CENTER_BLUE = new Pose3d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Units.inchesToMeters(72), Rotation3d.kZero);
+
+  public static final Pose3d HUB_CENTER_RED = new Pose3d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84), Units.inchesToMeters(72), Rotation3d.kZero);
 }

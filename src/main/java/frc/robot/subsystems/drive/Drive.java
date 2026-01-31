@@ -22,6 +22,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -355,5 +356,23 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
+  }
+
+  public Rotation2d getAngleToHub() {
+    Alliance alliance = DriverStation.getAlliance().get();
+    Pose3d hubCenter = new Pose3d();
+    if (alliance == Alliance.Blue) {
+      hubCenter = Constants.HUB_CENTER_BLUE;
+    }
+    else if (alliance == Alliance.Red){
+      hubCenter = Constants.HUB_CENTER_RED;
+    }
+    double robotX = getPose().getX();
+    double robotY = getPose().getY();
+    double hubX = hubCenter.getX();
+    double hubY = hubCenter.getY();
+    double xDifference = robotX - hubX;
+    double yDifference = robotY - hubY;
+    return new Rotation2d(Radians.of(Math.atan2(yDifference, xDifference)));
   }
 }
