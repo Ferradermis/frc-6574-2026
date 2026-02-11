@@ -42,6 +42,9 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivot extends SubsystemBase {
 
+  private Boolean isDeployed = false;
+  private int fuelCount = 0;
+
   @AutoLog
   public static class IntakePivotInputs {
     public Angle pivotPosition = Degrees.of(0);
@@ -156,5 +159,26 @@ public class IntakePivot extends SubsystemBase {
 
   public Current getCurrent() {
     return intakePivotInputs.pivotCurrent;
+  }
+
+  public void setDeployed(boolean deployed) {
+    isDeployed = deployed;
+  }
+
+  public Boolean isDeployed() {
+    return isDeployed;
+  }
+
+  public void increaseFuelCount() {
+    fuelCount++;
+    System.out.println(fuelCount);
+  }
+
+  public void decreaseFuelCount() {
+    fuelCount--;
+  }
+
+  public int getFuelCount() {
+    return fuelCount;
   }
 }
