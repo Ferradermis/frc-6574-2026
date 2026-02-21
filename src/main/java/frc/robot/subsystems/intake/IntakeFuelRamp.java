@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -21,6 +23,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -39,6 +43,17 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakeFuelRamp extends SubsystemBase {
+
+  public IntakeFuelRamp() {
+    
+  }
+
+  double kP = 50;
+  double kI = 0;
+  double kD = 0;
+  double kS = 1;
+  double kV = 0;
+  double kG = 0;
 
   @AutoLog
   public static class IntakeRampInputs {
@@ -62,29 +77,29 @@ public class IntakeFuelRamp extends SubsystemBase {
       new SmartMotorControllerConfig(this)
           .withControlMode(ControlMode.CLOSED_LOOP)
           .withClosedLoopController(
-              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
           .withSimClosedLoopController(
-              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
-          .withFeedforward(new ArmFeedforward(0, 0, 0))
-          .withSimFeedforward(new ArmFeedforward(0, 0, 0))
+              kP, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
+              .withFeedforward(new ArmFeedforward(kS, kG, kV))
+          .withSimFeedforward(new ArmFeedforward(kS, kG, kV))
           .withTelemetry("IntakeRampMotor", TelemetryVerbosity.HIGH)
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
           .withMotorInverted(false)
           .withIdleMode(MotorMode.BRAKE)
-          .withStatorCurrentLimit(Amps.of(40))
+          .withStatorCurrentLimit(Amps.of(100))
           .withClosedLoopRampRate(Seconds.of(0.25))
           .withOpenLoopRampRate(Seconds.of(0.25));
 
-  private TalonFX intakeRampMotor = new TalonFX(10);
+  private TalonFX intakeRampMotor = new TalonFX(Constants.CanIds.INTAKE_RAMP_PIVOT_ID, Constants.CanIds.MECH_BUS);
 
   private SmartMotorController intakeRampMotorController =
       new TalonFXWrapper(intakeRampMotor, DCMotor.getKrakenX44(1), smcConfig);
 
   private PivotConfig rampConfig =
       new PivotConfig(intakeRampMotorController)
-          .withSoftLimits(Degrees.of(-20), Degrees.of(10))
-          .withHardLimit(Degrees.of(-30), Degrees.of(40))
-          .withStartingPosition(Degrees.of(-5))
+          .withSoftLimits(Degrees.of(95), Degrees.of(-20))
+          .withHardLimit(Degrees.of(95), Degrees.of(-20))
+          .withStartingPosition(Degrees.of(90))
           .withMOI(KilogramSquareMeters.of(1))
           .withTelemetry("IntakeRampMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(positionConfig);
@@ -93,13 +108,14 @@ public class IntakeFuelRamp extends SubsystemBase {
 
   private void updateInputs() {
     intakeRampInputs.rampPosition = ramp.getAngle();
+    intakeRampInputs.rampDesiredPosition = ramp.getMechanismSetpoint().orElse(Degrees.of(0));
     intakeRampInputs.rampVelocity = intakeRampMotorController.getMechanismVelocity();
     intakeRampInputs.rampAppliedVolts = intakeRampMotorController.getVoltage();
     intakeRampInputs.rampCurrent = intakeRampMotorController.getStatorCurrent();
   }
 
   public Command setAngle(Angle angle) {
-    return ramp.setAngle(angle);
+    return ramp.run(angle);
   }
 
   public Command set(double dutycycle) {

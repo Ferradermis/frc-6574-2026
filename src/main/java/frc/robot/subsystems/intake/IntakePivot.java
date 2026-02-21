@@ -7,12 +7,16 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
@@ -21,6 +25,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 import org.ironmaple.simulation.IntakeSimulation;
 import org.littletonrobotics.junction.AutoLog;
@@ -45,6 +50,17 @@ public class IntakePivot extends SubsystemBase {
   private Boolean isDeployed = false;
   private int fuelCount = 0;
 
+  double kP = 13;
+  double kI = 0;
+  double kD = 0;
+  double kS = 0;
+  double kV = 0;
+  double kG = 0.5;
+
+  public IntakePivot() {
+    
+  }
+
   @AutoLog
   public static class IntakePivotInputs {
     public Angle pivotPosition = Degrees.of(0);
@@ -67,30 +83,30 @@ public class IntakePivot extends SubsystemBase {
       new SmartMotorControllerConfig(this)
           .withControlMode(ControlMode.CLOSED_LOOP)
           .withClosedLoopController(
-              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
           .withSimClosedLoopController(
-              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
-          .withFeedforward(new ArmFeedforward(0, 0, 0))
-          .withSimFeedforward(new ArmFeedforward(0, 0, 0))
+              kP, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
+          .withFeedforward(new ArmFeedforward(kS, kG, kV))
+          .withSimFeedforward(new ArmFeedforward(kS, kG, kV))
           .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH)
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
-          .withMotorInverted(false)
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(21)))
+          .withMotorInverted(true)
           .withIdleMode(MotorMode.BRAKE)
-          .withStatorCurrentLimit(Amps.of(40))
+          .withStatorCurrentLimit(Amps.of(120))
           .withClosedLoopRampRate(Seconds.of(0.25))
           .withOpenLoopRampRate(Seconds.of(0.25));
 
-  private TalonFX intakePivotMotor = new TalonFX(12);
+  private TalonFX intakePivotMotor = new TalonFX(Constants.CanIds.INTAKE_PIVOT_ID, Constants.CanIds.MECH_BUS);
 
   private SmartMotorController intakePivotMotorController =
       new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX44(1), smcConfig);
 
   private PivotConfig pivotConfig =
       new PivotConfig(intakePivotMotorController)
-          .withSoftLimits(Degrees.of(-20), Degrees.of(10))
-          .withHardLimit(Degrees.of(-30), Degrees.of(40))
-          .withStartingPosition(Degrees.of(-5))
-          .withMOI(KilogramSquareMeters.of(1))
+          .withSoftLimits(Degrees.of(95), Degrees.of(-10))
+          .withHardLimit(Degrees.of(95), Degrees.of(-10))
+          .withStartingPosition(Degrees.of(90))
+          .withMOI(Inches.of(12), Pounds.of(8))
           .withTelemetry("IntakePivotMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(positionConfig);
 
@@ -98,6 +114,7 @@ public class IntakePivot extends SubsystemBase {
 
   private void updateInputs() {
     intakePivotInputs.pivotPosition = pivot.getAngle();
+    intakePivotInputs.pivotDesiredPosition = pivot.getMechanismSetpoint().orElse(Degrees.of(0));
     intakePivotInputs.pivotVelocity = intakePivotMotorController.getMechanismVelocity();
     intakePivotInputs.pivotAppliedVolts = intakePivotMotorController.getVoltage();
     intakePivotInputs.pivotCurrent = intakePivotMotorController.getStatorCurrent();
@@ -105,6 +122,20 @@ public class IntakePivot extends SubsystemBase {
 
   public Command setAngle(Angle angle) {
     return pivot.setAngle(angle);
+  }
+
+  public Command deployIntake() {
+    return this.runOnce(() -> {
+        setDeployed(true);
+        System.out.println("Deploy Intake"); 
+        setAngle(Degrees.of(90));
+      }
+    );
+  }
+
+  public Command retractIntake() {
+    setDeployed(false);
+    return setAngle(Degrees.of(0));
   }
 
   public Command set(double dutycycle) {
@@ -128,6 +159,7 @@ public class IntakePivot extends SubsystemBase {
   public void periodic() {
     updateInputs();
     Logger.processInputs("RobotState/IntakePivot", intakePivotInputs);
+    Logger.recordOutput("Fuel Count", fuelCount);
     pivot.updateTelemetry();
   }
 
