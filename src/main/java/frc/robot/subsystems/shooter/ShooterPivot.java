@@ -7,6 +7,9 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -21,11 +24,12 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.MechanismPositionConfig;
@@ -40,6 +44,13 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ShooterPivot extends SubsystemBase {
+
+  double kP = 55;
+  double kI = 0;
+  double kD = 0;
+  double kS = 0;
+  double kV = 0;
+  double kA = 0;
 
   @AutoLog
   public static class ShooterPivotInputs {
@@ -64,30 +75,28 @@ public class ShooterPivot extends SubsystemBase {
       new SmartMotorControllerConfig(this)
           .withControlMode(ControlMode.CLOSED_LOOP)
           .withClosedLoopController(
-              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
           .withSimClosedLoopController(
-              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
-          .withFeedforward(new ArmFeedforward(0, 0, 0))
-          .withSimFeedforward(new ArmFeedforward(0, 0, 0))
+              kP, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
           .withTelemetry("ShooterPivotMotor", TelemetryVerbosity.HIGH)
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(210)))
           .withMotorInverted(false)
           .withIdleMode(MotorMode.BRAKE)
           .withStatorCurrentLimit(Amps.of(40))
           .withClosedLoopRampRate(Seconds.of(0.25))
           .withOpenLoopRampRate(Seconds.of(0.25));
 
-  private TalonFX shooterPivotMotor = new TalonFX(16);
+  private TalonFX shooterPivotMotor = new TalonFX(Constants.CanIds.SHOOTER_HOOD_ID, Constants.CanIds.MECH_BUS);
 
   private SmartMotorController shooterPivotMotorController =
       new TalonFXWrapper(shooterPivotMotor, DCMotor.getKrakenX44(1), smcConfig);
 
   private PivotConfig pivotConfig =
       new PivotConfig(shooterPivotMotorController)
-          .withSoftLimits(Degrees.of(-20), Degrees.of(10))
-          .withHardLimit(Degrees.of(-30), Degrees.of(40))
-          .withStartingPosition(Degrees.of(-5))
-          .withMOI(KilogramSquareMeters.of(1))
+          .withSoftLimits(Degrees.of(72), Degrees.of(30))
+          .withHardLimit(Degrees.of(72), Degrees.of(30))
+          .withStartingPosition(Degrees.of(70))
+          .withMOI(Inches.of(10), Pounds.of(1))
           .withTelemetry("ShooterPivotMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(positionConfig);
 
@@ -95,6 +104,7 @@ public class ShooterPivot extends SubsystemBase {
 
   private void updateInputs() {
     shooterPivotInputs.pivotPosition = pivot.getAngle();
+    shooterPivotInputs.pivotDesiredPosition = pivot.getMechanismSetpoint().orElse(Degrees.of(0));
     shooterPivotInputs.pivotVelocity = shooterPivotMotorController.getMechanismVelocity();
     shooterPivotInputs.pivotAppliedVolts = shooterPivotMotorController.getVoltage();
     shooterPivotInputs.pivotCurrent = shooterPivotMotorController.getStatorCurrent();
@@ -112,17 +122,22 @@ public class ShooterPivot extends SubsystemBase {
     return pivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   }
 
-  public LoggedMechanism2d getGeneratedMechanism2d() {
-    return new LoggedMechanism2d(
-        pivot.getMechanismLigament().getLineWeight(),
+  public LoggedMechanismLigament2d getGeneratedMechanism2d() {
+    return new LoggedMechanismLigament2d(
+        pivot.getName(),
         pivot.getMechanismLigament().getLength(),
+        pivot.getMechanismLigament().getAngle(),
+        pivot.getMechanismLigament().getLineWeight(),
         pivot.getMechanismLigament().getColor());
+  }
+
+  public ShooterPivot() {
+
   }
 
   @Override
   public void periodic() {
     updateInputs();
-    Logger.recordOutput("Mech2D/ShooterPivot", getGeneratedMechanism2d());
     Logger.processInputs("RobotState/ShooterPivot", shooterPivotInputs);
     pivot.updateTelemetry();
   }

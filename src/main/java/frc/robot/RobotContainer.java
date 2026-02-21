@@ -7,18 +7,33 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static frc.robot.subsystems.vision.VisionConstants.*;
+
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.Dimensions;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.TeleopCommands.DumpFuel;
+import frc.robot.commands.TeleopCommands.GoToHome;
+import frc.robot.commands.TeleopCommands.Intake;
+import frc.robot.commands.TeleopCommands.Shoot;
+import frc.robot.commands.TeleopCommands.StowIntake;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
@@ -38,6 +53,9 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.FuelSim;
+
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -48,16 +66,19 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  public static Drive drive;
   private final Vision vision;
-  private final IntakeFuelRamp fuelRamp;
-  private final IntakeMainRoller intakeMainRoller;
-  private final IntakePivot intakePivot;
-  private final IntakeStaticRoller intakeStaticRoller;
-  private final Shooter shooter;
-  private final ShooterPivot shooterPivot;
-  private final ShooterTransition shooterTransition;
-  private final Transition transition;
+  public static IntakeFuelRamp fuelRamp;
+  public static IntakeMainRoller intakeMainRoller;
+  public static IntakePivot intakePivot;
+  public static IntakeStaticRoller intakeStaticRoller;
+  public static Shooter shooter;
+  public static ShooterPivot shooterPivot;
+  public static ShooterTransition shooterTransition;
+  public static Transition transition;
+  public static RobotSim sim;
+  public FuelSim fuelSim;
+
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -72,18 +93,15 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOLimelight(camera0Name, drive::getRotation),
-                new VisionIOLimelight(camera1Name, drive::getRotation));
+        drive = new Drive(
+            new GyroIOPigeon2(),
+            new ModuleIOTalonFX(TunerConstants.FrontLeft),
+            new ModuleIOTalonFX(TunerConstants.FrontRight),
+            new ModuleIOTalonFX(TunerConstants.BackLeft),
+            new ModuleIOTalonFX(TunerConstants.BackRight));
+        vision = new Vision(
+            drive::addVisionMeasurement,
+            new VisionIOLimelight(camera0Name, drive::getRotation));
         fuelRamp = new IntakeFuelRamp();
         intakeMainRoller = new IntakeMainRoller();
         intakePivot = new IntakePivot();
@@ -92,6 +110,7 @@ public class RobotContainer {
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
         transition = new Transition();
+        //sim = new RobotSim();
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
         // implementations
@@ -113,18 +132,16 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
+        configureFuelSim();
+        drive = new Drive(
                 new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
-                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+            new ModuleIOSim(TunerConstants.FrontLeft),
+            new ModuleIOSim(TunerConstants.FrontRight),
+            new ModuleIOSim(TunerConstants.BackLeft),
+            new ModuleIOSim(TunerConstants.BackRight));
+        vision = new Vision(
+            drive::addVisionMeasurement,
+            new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose));
         fuelRamp = new IntakeFuelRamp();
         intakeMainRoller = new IntakeMainRoller();
         intakePivot = new IntakePivot();
@@ -133,17 +150,18 @@ public class RobotContainer {
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
         transition = new Transition();
+        sim = new RobotSim();
+        configureFuelSimRobot(intakePivot::increaseFuelCount);
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
+        drive = new Drive(
+            new GyroIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         fuelRamp = new IntakeFuelRamp();
         intakeMainRoller = new IntakeMainRoller();
@@ -153,6 +171,7 @@ public class RobotContainer {
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
         transition = new Transition();
+        //sim = new RobotSim();
         break;
     }
 
@@ -202,7 +221,7 @@ public class RobotContainer {
                 drive,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
-                () -> Rotation2d.kZero));
+                () -> drive.getAngleToHub()));
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -217,6 +236,30 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    // controller.leftTrigger().whileTrue(shooterTransition.setRightVelocity(RPM.of(500)));
+    // controller.leftTrigger().whileFalse(shooterTransition.setRightVelocity(RPM.of(0)));
+
+    // controller.rightTrigger().whileTrue(shooter.setRightVelocity(RPM.of(2000)));
+    // controller.rightTrigger().whileFalse(shooter.setRightVelocity(RPM.of(0)));
+
+    // controller.rightBumper().whileTrue(transition.setVelocity(RPM.of(800)));
+    // controller.rightBumper().whileFalse(transition.setVelocity(RPM.of(0)));
+
+    // controller.povRight().onTrue(fuelRamp.setAngle(Degrees.of(90)));
+    // controller.povLeft().onTrue(fuelRamp.setAngle(Degrees.of(-19)));
+
+    controller.rightBumper().whileTrue(new Intake(RPM.of(3000)));
+    controller.rightBumper().whileFalse(new Intake(RPM.of(0)));
+
+    controller.leftBumper().whileTrue(new Shoot(RPM.of(2000), RPM.of(1500), RPM.of(800)));
+    controller.leftBumper().whileFalse(new Shoot(RPM.of(0), RPM.of(0), RPM.of(0)));
+
+    controller.povDown().onTrue(new StowIntake());
+    controller.povUp().onTrue(new GoToHome());
+
+    controller.rightTrigger().whileTrue(new DumpFuel(RPM.of(-3000), RPM.of(-800)));
+    controller.rightTrigger().whileFalse(new DumpFuel(RPM.of(0), RPM.of(0)));
   }
 
   /**
@@ -227,4 +270,37 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+
+  private void configureFuelSim() {
+    fuelSim = new FuelSim();
+    fuelSim.spawnStartingFuel();
+
+    fuelSim.start();
+    SmartDashboard.putData(Commands.runOnce(() -> {
+                fuelSim.clearFuel();
+                fuelSim.spawnStartingFuel();
+            })
+            .withName("Reset Fuel")
+            .ignoringDisable(true));
+    }
+
+    private void configureFuelSimRobot(Runnable intakeCallback) {
+        fuelSim.registerRobot(
+                Dimensions.FULL_WIDTH.in(Meters),
+                Dimensions.FULL_LENGTH.in(Meters),
+                Dimensions.BUMPER_HEIGHT.in(Meters),
+                drive::getPose,
+                drive::getFieldSpeeds);
+        fuelSim.registerIntake(
+                Dimensions.FULL_LENGTH.in(Meters),
+                Dimensions.FULL_LENGTH.plus(Inches.of(7)).in(Meters),
+                -Dimensions.FULL_WIDTH.div(2).in(Meters),
+                Dimensions.FULL_WIDTH.div(2).in(Meters),
+                () -> intakePivot.isDeployed(),
+                intakeCallback);
+    }
+
+    public Drive getDrive() {
+        return drive;
+    }
 }

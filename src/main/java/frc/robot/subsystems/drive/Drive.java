@@ -8,7 +8,6 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -22,6 +21,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -294,6 +294,10 @@ public class Drive extends SubsystemBase {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
+  public ChassisSpeeds getFieldSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getRotation());
+    }
+
   /** Returns the position of each module in radians. */
   public double[] getWheelRadiusCharacterizationPositions() {
     double[] values = new double[4];
@@ -355,5 +359,23 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
+  }
+    
+  public Rotation2d getAngleToHub() {
+    Alliance alliance = DriverStation.getAlliance().get();
+    Pose3d hubCenter = new Pose3d();
+    if (alliance == Alliance.Blue) {
+      hubCenter = Constants.HUB_CENTER_BLUE;
+    }
+    else if (alliance == Alliance.Red){
+      hubCenter = Constants.HUB_CENTER_RED;
+    }
+    double robotX = getPose().getX();
+    double robotY = getPose().getY();
+    double hubX = hubCenter.getX();
+    double hubY = hubCenter.getY();
+    double xDifference = robotX - hubX;
+    double yDifference = robotY - hubY;
+    return new Rotation2d(Radians.of(Math.atan2(yDifference, xDifference)));
   }
 }

@@ -7,9 +7,12 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -18,10 +21,11 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -37,12 +41,19 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ShooterTransition extends SubsystemBase {
 
-  double kP = 50;
+  double kP = 3.5;
   double kI = 0;
   double kD = 0;
   double kS = 0;
-  double kV = 0;
-  double kA = 0;
+  double kV = 5;
+  double kA = 0.5;
+
+  public ShooterTransition() {
+    
+  }
+
+  private TalonFX leftMotor = new TalonFX(Constants.CanIds.SHOOTER_TRANSITION_LEFT_ID, Constants.CanIds.MECH_BUS);
+  private TalonFX rightMotor = new TalonFX(Constants.CanIds.SHOOTER_TRANSITION_RIGHT_ID, Constants.CanIds.MECH_BUS);
 
   private MechanismPositionConfig shooterLeftPositionConfig =
       new MechanismPositionConfig()
@@ -63,9 +74,9 @@ public class ShooterTransition extends SubsystemBase {
           .withControlMode(ControlMode.CLOSED_LOOP)
           // Feedback Constants (PID Constants)
           .withClosedLoopController(
-              kP, kI, kD, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
           .withSimClosedLoopController(
-              kP, kI, kD, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
           // Feedforward Constants
           .withFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
           .withSimFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
@@ -80,16 +91,16 @@ public class ShooterTransition extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(false)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(40));
+          .withStatorCurrentLimit(Amps.of(70));
 
   private SmartMotorControllerConfig rightConfig =
       new SmartMotorControllerConfig(this)
           .withControlMode(ControlMode.CLOSED_LOOP)
           // Feedback Constants (PID Constants)
           .withClosedLoopController(
-              kP, kI, kD, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
           .withSimClosedLoopController(
-              kP, kI, kD, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
           // Feedforward Constants
           .withFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
           .withSimFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
@@ -104,7 +115,8 @@ public class ShooterTransition extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(40));
+          .withStatorCurrentLimit(Amps.of(70))
+          .withFollowers(new Pair<Object,Boolean>(leftMotor, true));
 
   @AutoLog
   public static class ShooterTransitionInputs {
@@ -119,9 +131,6 @@ public class ShooterTransition extends SubsystemBase {
   private final ShooterTransitionInputsAutoLogged shooterLeftInputs =
       new ShooterTransitionInputsAutoLogged();
 
-  private TalonFX leftMotor = new TalonFX(17);
-  private TalonFX rightMotor = new TalonFX(18);
-
   private SmartMotorController leftMotorController =
       new TalonFXWrapper(leftMotor, DCMotor.getKrakenX60(1), leftConfig);
   private SmartMotorController rightMotorController =
@@ -130,11 +139,11 @@ public class ShooterTransition extends SubsystemBase {
   private FlyWheelConfig leftShooterConfig =
       new FlyWheelConfig(leftMotorController)
           // Diameter of the flywheel.
-          .withDiameter(Inches.of(4))
+          .withDiameter(Inches.of(3))
           // Mass of the flywheel.
-          .withMass(Pounds.of(1))
+          .withMass(Pounds.of(0.3))
           // Maximum speed of the shooter.
-          .withUpperSoftLimit(RPM.of(1000))
+          .withUpperSoftLimit(RPM.of(6000))
           // Telemetry name and verbosity for the shooter.
           .withTelemetry("ShooterTransitionLeftMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(shooterLeftPositionConfig);
@@ -144,9 +153,9 @@ public class ShooterTransition extends SubsystemBase {
           // Diameter of the flywheel.
           .withDiameter(Inches.of(4))
           // Mass of the flywheel.
-          .withMass(Pounds.of(1))
+          .withMass(Pounds.of(0.3))
           // Maximum speed of the shooter.
-          .withUpperSoftLimit(RPM.of(1000))
+          .withUpperSoftLimit(RPM.of(6000))
           // Telemetry name and verbosity for the shooter.
           .withTelemetry("ShooterTransitionRightMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(shooterRightPositionConfig);
@@ -176,11 +185,11 @@ public class ShooterTransition extends SubsystemBase {
   }
 
   public Command setRightVelocity(AngularVelocity speed) {
-    return rightShooter.setSpeed(speed);
+    return rightShooter.run(speed);
   }
 
   public Command setLeftVelocity(AngularVelocity speed) {
-    return leftShooter.setSpeed(speed);
+    return leftShooter.run(speed);
   }
 
   public Command setRight(double dutyCycle) {
@@ -191,25 +200,27 @@ public class ShooterTransition extends SubsystemBase {
     return leftShooter.set(dutyCycle);
   }
 
-  public LoggedMechanism2d getLeftShooterGeneratedMechanism2d() {
-    return new LoggedMechanism2d(
-        leftShooter.getMechanismLigament().getLineWeight(),
+  public LoggedMechanismLigament2d getLeftShooterGeneratedMechanism2d() {
+    return new LoggedMechanismLigament2d(
+        leftShooter.getName(),
         leftShooter.getMechanismLigament().getLength(),
+        leftShooter.getMechanismLigament().getAngle(),
+        leftShooter.getMechanismLigament().getLineWeight(),
         leftShooter.getMechanismLigament().getColor());
   }
 
-  public LoggedMechanism2d getRightShooterGeneratedMechanism2d() {
-    return new LoggedMechanism2d(
-        rightShooter.getMechanismLigament().getLineWeight(),
+  public LoggedMechanismLigament2d getRightShooterGeneratedMechanism2d() {
+    return new LoggedMechanismLigament2d(
+        rightShooter.getName(),
         rightShooter.getMechanismLigament().getLength(),
+        rightShooter.getMechanismLigament().getAngle(),
+        rightShooter.getMechanismLigament().getLineWeight(),
         rightShooter.getMechanismLigament().getColor());
   }
 
   @Override
   public void periodic() {
     updateInputs();
-    Logger.recordOutput("Mech2D/LeftTransition", getLeftShooterGeneratedMechanism2d());
-    Logger.recordOutput("Mech2D/RightTransition", getRightShooterGeneratedMechanism2d());
     Logger.processInputs("RobotState/ShooterTransitionRight", shooterRightInputs);
     rightShooter.updateTelemetry();
     Logger.processInputs("RobotState/ShooterTransitionLeft", shooterLeftInputs);

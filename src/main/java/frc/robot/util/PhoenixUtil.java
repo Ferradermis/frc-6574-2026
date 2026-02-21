@@ -8,7 +8,14 @@
 package frc.robot.util;
 
 import com.ctre.phoenix6.StatusCode;
+
+import edu.wpi.first.wpilibj.Timer;
+
+import static edu.wpi.first.units.Units.Seconds;
+
 import java.util.function.Supplier;
+
+import org.ironmaple.simulation.SimulatedArena;
 
 public class PhoenixUtil {
   /** Attempts to run the command until no error is produced. */
@@ -18,4 +25,5 @@ public class PhoenixUtil {
       if (error.isOK()) break;
     }
   }
+  
 }

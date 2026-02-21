@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -18,9 +19,11 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -35,12 +38,17 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakeStaticRoller extends SubsystemBase {
-  double kP = 50;
+
+  double kP = 0.5;
   double kI = 0;
   double kD = 0;
   double kS = 0;
-  double kV = 0;
+  double kV = 0.1;
   double kA = 0;
+
+  public IntakeStaticRoller() {
+    
+  }
 
   private MechanismPositionConfig positionConfig =
       new MechanismPositionConfig()
@@ -54,9 +62,9 @@ public class IntakeStaticRoller extends SubsystemBase {
           .withControlMode(ControlMode.CLOSED_LOOP)
           // Feedback Constants (PID Constants)
           .withClosedLoopController(
-              kP, kI, kD, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
           .withSimClosedLoopController(
-              kP, kI, kD, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              kP, kI, kD, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
           // Feedforward Constants
           .withFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
           .withSimFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
@@ -67,7 +75,7 @@ public class IntakeStaticRoller extends SubsystemBase {
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
           // motor.
           // You could also use .withGearing(12) which does the same thing.
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
           // Motor properties to prevent over currenting.
           .withMotorInverted(false)
           .withIdleMode(MotorMode.COAST)
@@ -84,7 +92,7 @@ public class IntakeStaticRoller extends SubsystemBase {
   private final StaticRollerInputsAutoLogged staticRollerInputs =
       new StaticRollerInputsAutoLogged();
 
-  private TalonFX StaticRollerMotor = new TalonFX(13);
+  private TalonFX StaticRollerMotor = new TalonFX(Constants.CanIds.INTAKE_STATIC_ROLLER_ID, Constants.CanIds.MECH_BUS);
 
   private SmartMotorController StaticRollerMotorController =
       new TalonFXWrapper(StaticRollerMotor, DCMotor.getKrakenX44(1), rollerConfig);
@@ -96,7 +104,7 @@ public class IntakeStaticRoller extends SubsystemBase {
           // Mass of the flywheel.
           .withMass(Pounds.of(1))
           // Maximum speed of the shooter.
-          .withUpperSoftLimit(RPM.of(1000))
+          .withUpperSoftLimit(RPM.of(6000))
           // Telemetry name and verbosity for the shooter.
           .withTelemetry("IntakeStaticMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(positionConfig);
@@ -111,29 +119,30 @@ public class IntakeStaticRoller extends SubsystemBase {
     staticRollerInputs.current = StaticRollerMotorController.getStatorCurrent();
   }
 
-  public AngularVelocity getRightVelocity() {
+  public AngularVelocity getVelocity() {
     return staticRoller.getSpeed();
   }
 
-  public Command setRightVelocity(AngularVelocity speed) {
-    return staticRoller.setSpeed(speed);
+  public Command setVelocity(AngularVelocity speed) {
+    return staticRoller.run(speed);
   }
 
-  public Command setRight(double dutyCycle) {
+  public Command set(double dutyCycle) {
     return staticRoller.set(dutyCycle);
   }
 
-  public LoggedMechanism2d getGeneratedMechanism2d() {
-    return new LoggedMechanism2d(
-        staticRoller.getMechanismLigament().getLineWeight(),
+  public LoggedMechanismLigament2d getGeneratedMechanism2d() {
+    return new LoggedMechanismLigament2d(
+        staticRoller.getName(),
         staticRoller.getMechanismLigament().getLength(),
+        staticRoller.getMechanismLigament().getAngle(),
+        staticRoller.getMechanismLigament().getLineWeight(),
         staticRoller.getMechanismLigament().getColor());
   }
 
   @Override
   public void periodic() {
     updateInputs();
-    Logger.recordOutput("Mech2D/IntakeStaticRoller", getGeneratedMechanism2d());
     Logger.processInputs("RobotState/IntakeStaticRoller", staticRollerInputs);
     staticRoller.updateTelemetry();
   }
