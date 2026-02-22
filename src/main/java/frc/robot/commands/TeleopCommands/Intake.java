@@ -10,13 +10,14 @@ import frc.robot.RobotContainer;
 
 public class Intake extends SequentialCommandGroup {
     
-    public Intake(AngularVelocity speed) {
+    public Intake(AngularVelocity speed, AngularVelocity transitionSpeed) {
         addCommands(
             RobotContainer.fuelRamp.setAngle(Degrees.of(-18)).withTimeout(0.25),
             RobotContainer.intakePivot.setAngle(Degrees.of(-8.5)).withTimeout(0.5),
             new ParallelCommandGroup(
                 RobotContainer.intakeStaticRoller.setVelocity(speed),
-                RobotContainer.intakeMainRoller.setVelocity(speed)
+                RobotContainer.intakeMainRoller.setVelocity(speed),
+                RobotContainer.transition.setVelocity(transitionSpeed)
         ));
     }
 }

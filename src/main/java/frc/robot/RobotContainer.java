@@ -249,8 +249,8 @@ public class RobotContainer {
     // controller.povRight().onTrue(fuelRamp.setAngle(Degrees.of(90)));
     // controller.povLeft().onTrue(fuelRamp.setAngle(Degrees.of(-19)));
 
-    controller.rightBumper().whileTrue(new Intake(RPM.of(3000)));
-    controller.rightBumper().whileFalse(new Intake(RPM.of(0)));
+    controller.rightBumper().whileTrue(new Intake(RPM.of(3000), RPM.of(-800)));
+    controller.rightBumper().whileFalse(new Intake(RPM.of(0), RPM.of(0)));
 
     controller.leftBumper().whileTrue(new Shoot(RPM.of(2000), RPM.of(1500), RPM.of(800)));
     controller.leftBumper().whileFalse(new Shoot(RPM.of(0), RPM.of(0), RPM.of(0)));
