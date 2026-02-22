@@ -48,15 +48,20 @@ public class GetBestAngle extends Command {
 
         // Find the angle based on target velocity and the distance from hub and bot using math I don't want to explain here
         double g = 9.8; // Acceleration due to gravity
-        double heightDifference = 1.3338; // Difference (in meters) between hub and bot heights
+        double heightDifference = 1.076325; // Difference (in meters) between hub and bot heights
         double velocity = 45; // Target velocity (m/s)
-        double thetaRads = Math.atan((Math.pow(velocity, 2) - Math.sqrt(Math.pow(velocity, 4) - (g * ((g * Math.pow(distance, 2)) + (2 * heightDifference * Math.pow(velocity, 2))))) / (g * distance)));
-        RobotContainer.shooterPivot.setAngle(Degrees.of(Degrees.convertFrom(thetaRads, Radians)));
+        double thetaRads = Math.atan(
+            (Math.pow(velocity, 2) - Math.sqrt(
+                Math.pow(velocity, 4) - (g*(g*Math.pow(distance, 2) + (2 * heightDifference * Math.pow(velocity, 2))))
+                )) / (g*distance)
+        );
+        RobotContainer.shooterPivot.setAngle(Radians.of(thetaRads));
+        System.out.println(thetaRads);
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return false;
     }
 
     @Override
