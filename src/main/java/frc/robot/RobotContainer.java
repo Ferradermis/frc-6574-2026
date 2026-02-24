@@ -18,6 +18,8 @@ import static frc.robot.subsystems.vision.VisionConstants.*;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -33,6 +35,7 @@ import frc.robot.commands.TeleopCommands.DumpFuel;
 import frc.robot.commands.TeleopCommands.GoToHome;
 import frc.robot.commands.TeleopCommands.Intake;
 import frc.robot.commands.TeleopCommands.Shoot;
+import frc.robot.commands.TeleopCommands.ShootAuto;
 import frc.robot.commands.TeleopCommands.StowIntake;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Transition;
@@ -82,6 +85,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController controller2 = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -175,6 +179,8 @@ public class RobotContainer {
         break;
     }
 
+    NamedCommands.registerCommand("Shoot", new ShootAuto(RPM.of(2000), RPM.of(1500), RPM.of(800)));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -237,26 +243,14 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    // controller.leftTrigger().whileTrue(shooterTransition.setRightVelocity(RPM.of(500)));
-    // controller.leftTrigger().whileFalse(shooterTransition.setRightVelocity(RPM.of(0)));
-
-    // controller.rightTrigger().whileTrue(shooter.setRightVelocity(RPM.of(2000)));
-    // controller.rightTrigger().whileFalse(shooter.setRightVelocity(RPM.of(0)));
-
-    // controller.rightBumper().whileTrue(transition.setVelocity(RPM.of(800)));
-    // controller.rightBumper().whileFalse(transition.setVelocity(RPM.of(0)));
-
-    // controller.povRight().onTrue(fuelRamp.setAngle(Degrees.of(90)));
-    // controller.povLeft().onTrue(fuelRamp.setAngle(Degrees.of(-19)));
-
     controller.rightBumper().whileTrue(new Intake(RPM.of(3000), RPM.of(-800)));
     controller.rightBumper().whileFalse(new Intake(RPM.of(0), RPM.of(0)));
 
     controller.leftBumper().whileTrue(new Shoot(RPM.of(2000), RPM.of(1500), RPM.of(800)));
     controller.leftBumper().whileFalse(new Shoot(RPM.of(0), RPM.of(0), RPM.of(0)));
 
-    controller.povDown().onTrue(new StowIntake());
-    controller.povUp().onTrue(new GoToHome());
+    controller2.a().onTrue(new StowIntake());
+    controller2.b().onTrue(new GoToHome());
 
     controller.rightTrigger().whileTrue(new DumpFuel(RPM.of(-3000), RPM.of(-800)));
     controller.rightTrigger().whileFalse(new DumpFuel(RPM.of(0), RPM.of(0)));

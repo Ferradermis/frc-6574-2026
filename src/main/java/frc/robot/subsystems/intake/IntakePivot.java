@@ -92,7 +92,7 @@ public class IntakePivot extends SubsystemBase {
           .withGearing(new MechanismGearing(GearBox.fromReductionStages(21)))
           .withMotorInverted(true)
           .withIdleMode(MotorMode.BRAKE)
-          .withStatorCurrentLimit(Amps.of(120))
+          .withStatorCurrentLimit(Amps.of(80))
           .withClosedLoopRampRate(Seconds.of(0.25))
           .withOpenLoopRampRate(Seconds.of(0.25));
 

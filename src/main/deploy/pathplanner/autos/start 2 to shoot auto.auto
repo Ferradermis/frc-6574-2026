@@ -9,6 +9,12 @@
           "data": {
             "pathName": "start 2 to shoot"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
         }
       ]
     }

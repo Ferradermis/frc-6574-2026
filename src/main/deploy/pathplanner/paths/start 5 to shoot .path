@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 1.5
+        "y": 2.5
       },
       "prevControl": null,
       "nextControl": {
         "x": 3.8049094415600826,
-        "y": 1.3860495913710178
+        "y": 2.386049591371018
       },
       "isLocked": false,
       "linkedName": "blue start 5"

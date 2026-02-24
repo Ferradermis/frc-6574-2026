@@ -48,7 +48,7 @@ public class IntakeFuelRamp extends SubsystemBase {
     
   }
 
-  double kP = 50;
+  double kP = 100;
   double kI = 0;
   double kD = 0;
   double kS = 1;
@@ -86,7 +86,7 @@ public class IntakeFuelRamp extends SubsystemBase {
           .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
           .withMotorInverted(false)
           .withIdleMode(MotorMode.BRAKE)
-          .withStatorCurrentLimit(Amps.of(100))
+          .withStatorCurrentLimit(Amps.of(80))
           .withClosedLoopRampRate(Seconds.of(0.25))
           .withOpenLoopRampRate(Seconds.of(0.25));
 
