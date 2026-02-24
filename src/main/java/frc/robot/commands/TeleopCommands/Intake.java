@@ -17,7 +17,7 @@ public class Intake extends SequentialCommandGroup {
             new ParallelCommandGroup(
                 RobotContainer.intakeStaticRoller.setVelocity(speed),
                 RobotContainer.intakeMainRoller.setVelocity(speed),
-                RobotContainer.transition.setVelocity(transitionSpeed)
+                RobotContainer.transition.setVelocity(transitionSpeed.times(-1))
         ));
     }
 }
