@@ -1,7 +1,9 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -48,13 +50,14 @@ public class GetBestAngle extends Command {
 
         // Find the angle based on target velocity and the distance from hub and bot using math I don't want to explain here
         double g = 9.8; // Acceleration due to gravity
-        double heightDifference = 1.076325; // Difference (in meters) between hub and bot heights
-        double velocity = 45; // Target velocity (m/s)
+        double heightDifference = 1.0795; // Difference (in meters) between hub and bot heights
+        double velocity = (RobotContainer.shooter.getRightVelocity().in(RPM) * 2 * Math.PI * 0.0508) / 60; // Target velocity (m/s)
+        System.out.println(velocity);
+        double sqrtThing = Math.sqrt(Math.pow(velocity, 4) - (g*(g*Math.pow(distance, 2) + (2 * heightDifference * Math.pow(velocity, 2)))));
+        System.out.println(sqrtThing);
         double thetaRads = Math.atan(
-            (Math.pow(velocity, 2) - Math.sqrt(
-                Math.pow(velocity, 4) - (g*(g*Math.pow(distance, 2) + (2 * heightDifference * Math.pow(velocity, 2))))
-                )) / (g*distance)
-        );
+            (Math.pow(velocity, 2) + sqrtThing
+                ) / (g*distance));
         RobotContainer.shooterPivot.setAngle(Radians.of(thetaRads));
         System.out.println(thetaRads);
     }

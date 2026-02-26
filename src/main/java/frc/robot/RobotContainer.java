@@ -36,6 +36,7 @@ import frc.robot.commands.TeleopCommands.GoToHome;
 import frc.robot.commands.TeleopCommands.Intake;
 import frc.robot.commands.TeleopCommands.Shoot;
 import frc.robot.commands.TeleopCommands.ShootAuto;
+import frc.robot.commands.TeleopCommands.StopShooter;
 import frc.robot.commands.TeleopCommands.StowIntake;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Transition;
@@ -48,7 +49,6 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.intake.IntakeFuelRamp;
 import frc.robot.subsystems.intake.IntakeMainRoller;
 import frc.robot.subsystems.intake.IntakePivot;
-import frc.robot.subsystems.intake.IntakeStaticRoller;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPivot;
 import frc.robot.subsystems.shooter.ShooterTransition;
@@ -74,7 +74,6 @@ public class RobotContainer {
   public static IntakeFuelRamp fuelRamp;
   public static IntakeMainRoller intakeMainRoller;
   public static IntakePivot intakePivot;
-  public static IntakeStaticRoller intakeStaticRoller;
   public static Shooter shooter;
   public static ShooterPivot shooterPivot;
   public static ShooterTransition shooterTransition;
@@ -109,7 +108,6 @@ public class RobotContainer {
         fuelRamp = new IntakeFuelRamp();
         intakeMainRoller = new IntakeMainRoller();
         intakePivot = new IntakePivot();
-        intakeStaticRoller = new IntakeStaticRoller();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
@@ -149,7 +147,6 @@ public class RobotContainer {
         fuelRamp = new IntakeFuelRamp();
         intakeMainRoller = new IntakeMainRoller();
         intakePivot = new IntakePivot();
-        intakeStaticRoller = new IntakeStaticRoller();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
@@ -170,7 +167,6 @@ public class RobotContainer {
         fuelRamp = new IntakeFuelRamp();
         intakeMainRoller = new IntakeMainRoller();
         intakePivot = new IntakePivot();
-        intakeStaticRoller = new IntakeStaticRoller();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
@@ -246,8 +242,8 @@ public class RobotContainer {
     controller.rightBumper().whileTrue(new Intake(RPM.of(3000), RPM.of(-800)));
     controller.rightBumper().whileFalse(new Intake(RPM.of(0), RPM.of(0)));
 
-    controller.leftBumper().whileTrue(new Shoot(RPM.of(2000), RPM.of(1500), RPM.of(800)));
-    controller.leftBumper().whileFalse(new Shoot(RPM.of(0), RPM.of(0), RPM.of(0)));
+    controller.leftBumper().whileTrue(new Shoot(RPM.of(3000), RPM.of(1500), RPM.of(800)));
+    controller.leftBumper().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
 
     controller2.a().onTrue(new StowIntake());
     controller2.b().onTrue(new GoToHome());

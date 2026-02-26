@@ -8,11 +8,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.commands.GetBestAngle;
 
-public class Shoot extends SequentialCommandGroup {
-    public Shoot(AngularVelocity shooterSpeed, AngularVelocity shootertransSpeed, AngularVelocity transSpeed) {
+public class StopShooter extends SequentialCommandGroup {
+    public StopShooter(AngularVelocity shooterSpeed, AngularVelocity shootertransSpeed, AngularVelocity transSpeed) {
         addCommands(
-            RobotContainer.shooter.setRightVelocity(shooterSpeed).withTimeout(2),
-            new GetBestAngle(RobotContainer.drive).withTimeout(0.5),
+            RobotContainer.shooter.setRightVelocity(shooterSpeed).withTimeout(0.25),
             RobotContainer.shooterTransition.setRightVelocity(shootertransSpeed).withTimeout(0.5),
             RobotContainer.transition.setVelocity(transSpeed).withTimeout(0.5));
     }

@@ -31,7 +31,6 @@ public class RobotSim extends SubsystemBase {
     fuelRampLigament = RobotContainer.fuelRamp.getGeneratedMechanism2d();
     mainRollerLigament = RobotContainer.intakeMainRoller.getGeneratedMechanism2d();
     intakePivotLigament = RobotContainer.intakePivot.getGeneratedMechanism2d();
-    staticRollerLigament = RobotContainer.intakeStaticRoller.getGeneratedMechanism2d();
     leftShooterLigament = RobotContainer.shooter.getLeftShooterGeneratedMechanism2d();
     rightShooterLigament = RobotContainer.shooter.getRightShooterGeneratedMechanism2d();
     shooterPivotLigament = RobotContainer.shooterPivot.getGeneratedMechanism2d();

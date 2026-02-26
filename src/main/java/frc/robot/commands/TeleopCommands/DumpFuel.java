@@ -14,7 +14,6 @@ public class DumpFuel extends SequentialCommandGroup {
         addCommands(
             new StowIntake().withTimeout(0.75),
             new ParallelCommandGroup(
-                RobotContainer.intakeStaticRoller.setVelocity(speed),
                 RobotContainer.intakeMainRoller.setVelocity(speed),
                 RobotContainer.transition.setVelocity(transitionSpeed)
         ));

@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -44,12 +45,12 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class Shooter extends SubsystemBase {
 
-  double kP = 2.5;
+  double kP = 0.25;
   double kI = 0;
   double kD = 0;
   double kS = 0;
-  double kV = 0;
-  double kA = 5;
+  double kV = 0.25;
+  double kA = 2;
 
   public Shooter() {
     
@@ -90,7 +91,7 @@ public class Shooter extends SubsystemBase {
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
           // motor.
           // You could also use .withGearing(12) which does the same thing.
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(15, 26)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.73333)))
           // Motor properties to prevent over currenting.
           .withMotorInverted(false)
           .withIdleMode(MotorMode.COAST)
@@ -114,7 +115,7 @@ public class Shooter extends SubsystemBase {
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
           // motor.
           // You could also use .withGearing(12) which does the same thing.
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(15, 26)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(1.73333  )))
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
