@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5,
-        "y": 4.0
+        "x": 0.0,
+        "y": 0.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7098513118044467,
-        "y": 4.0
+        "x": 0.25,
+        "y": 0.0
       },
       "isLocked": false,
-      "linkedName": "blue start 3"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 4.0
+        "x": 0.0,
+        "y": 0.0
       },
       "prevControl": {
-        "x": 3.422400443433705,
-        "y": 3.9982200766369056
+        "x": -0.25,
+        "y": 3.061616997868383e-17
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

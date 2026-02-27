@@ -34,6 +34,8 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.TeleopCommands.DumpFuel;
 import frc.robot.commands.TeleopCommands.GoToHome;
 import frc.robot.commands.TeleopCommands.Intake;
+import frc.robot.commands.TeleopCommands.IntakeAuto;
+import frc.robot.commands.TeleopCommands.IntakeAutoStop;
 import frc.robot.commands.TeleopCommands.Shoot;
 import frc.robot.commands.TeleopCommands.ShootAuto;
 import frc.robot.commands.TeleopCommands.StopShooter;
@@ -176,6 +178,8 @@ public class RobotContainer {
     }
 
     NamedCommands.registerCommand("Shoot", new ShootAuto(RPM.of(2000), RPM.of(1500), RPM.of(800)));
+    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(3000), RPM.of(-800)));
+    NamedCommands.registerCommand("StopIntake", new IntakeAutoStop());
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
