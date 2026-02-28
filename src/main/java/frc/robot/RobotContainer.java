@@ -178,7 +178,7 @@ public class RobotContainer {
     }
 
     NamedCommands.registerCommand("Shoot", new ShootAuto(RPM.of(2000), RPM.of(1500), RPM.of(800)));
-    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(3000), RPM.of(-800)));
+    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(3000), RPM.of(800)));
     NamedCommands.registerCommand("StopIntake", new IntakeAutoStop());
 
     // Set up auto routines
