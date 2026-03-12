@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4957142857142856,
-        "y": 0.6660000000000004
+        "x": 2.201768901569186,
+        "y": 0.9879457917261072
       },
       "isLocked": false,
       "linkedName": "human outpost dump"
     },
     {
       "anchor": {
-        "x": 1.9598714285714287,
-        "y": 2.8688571428571423
+        "x": 2.9004564907275316,
+        "y": 2.2429957203994295
       },
       "prevControl": {
-        "x": 0.9598714285714287,
-        "y": 2.8688571428571423
+        "x": 2.072382310984308,
+        "y": 1.4278601997146936
       },
       "nextControl": null,
       "isLocked": false,
@@ -53,7 +53,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -146.79342968491045
+    "rotation": -133.736
   },
   "reversed": false,
   "folder": "paths",

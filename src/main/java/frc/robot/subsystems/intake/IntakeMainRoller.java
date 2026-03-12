@@ -79,7 +79,7 @@ public class IntakeMainRoller extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(80));
+          .withStatorCurrentLimit(Amps.of(40));
 
   @AutoLog
   public static class MainRollerInputs {
@@ -94,7 +94,7 @@ public class IntakeMainRoller extends SubsystemBase {
   private TalonFX mainRollerMotor = new TalonFX(Constants.CanIds.INTAKE_MAIN_ROLLERS_ID, Constants.CanIds.MECH_BUS);
 
   private SmartMotorController mainRollerMotorController =
-      new TalonFXWrapper(mainRollerMotor, DCMotor.getKrakenX44(1), rollerConfig);
+      new TalonFXWrapper(mainRollerMotor, DCMotor.getKrakenX60(1), rollerConfig);
 
   private FlyWheelConfig mainRollerConfig =
       new FlyWheelConfig(mainRollerMotorController)
