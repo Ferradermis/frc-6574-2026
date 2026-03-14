@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pos 1 to depot"
+            "pathName": "left ramp to shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -15,15 +21,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Intake"
+                  "pathName": "Left Ramp Shoot to Fuel Pile"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Collect from depot"
+                  "name": "Delayed Intake"
                 }
               }
             ]
@@ -32,13 +38,13 @@
         {
           "type": "named",
           "data": {
-            "name": "StopIntake"
+            "name": "Stow"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "depot to shoot"
+            "pathName": "Fuel Pile to Shoot"
           }
         },
         {

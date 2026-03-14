@@ -20,6 +20,7 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Dimensions;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.TeleopCommands.DelayedIntakeAuto;
 import frc.robot.commands.TeleopCommands.DumpFuel;
 import frc.robot.commands.TeleopCommands.Eject;
 import frc.robot.commands.TeleopCommands.GoToHome;
@@ -180,6 +182,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Shoot", new ShootAuto(drive));
     NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(3000), RPM.of(-800)));
+    NamedCommands.registerCommand("Delayed Intake", new DelayedIntakeAuto(RPM.of(3000), RPM.of(-800)));
     NamedCommands.registerCommand("StopIntake", new IntakeAutoStop());
     NamedCommands.registerCommand("Stow", new StowIntake().withTimeout(0.5));
     NamedCommands.registerCommand("Small Stow", intakePivot.setAngle(Degrees.of(105)).withTimeout(0.5));
@@ -215,13 +218,17 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    SlewRateLimiter translationYLimiter = new SlewRateLimiter(2);
+    SlewRateLimiter translationXLimiter = new SlewRateLimiter(2);
+    SlewRateLimiter rotationLimiter = new SlewRateLimiter(4);
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> translationYLimiter.calculate(-controller.getLeftY()),
+            () -> translationXLimiter.calculate(-controller.getLeftX()),
+            () -> rotationLimiter.calculate(-controller.getRightX())));
 
     // Lock to 0° when A button is held
     controller2

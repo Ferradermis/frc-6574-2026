@@ -148,7 +148,8 @@ public class Shooter extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(40))
+          .withStatorCurrentLimit(Amps.of(140))
+          .withSupplyCurrentLimit(Amps.of(50))
           .withFollowers(new Pair<Object,Boolean>(leftMotor, true));
 
   @AutoLog
@@ -292,7 +293,7 @@ public class Shooter extends SubsystemBase {
         double denominator = 2 * Math.cos(t) * Math.cos(t) * (d * Math.tan(t) - heightDifference);
 
         if (denominator <= 0) {
-            return 5000;
+            return 10000;
         }
         return Math.sqrt((g*d*d) / denominator);
     }

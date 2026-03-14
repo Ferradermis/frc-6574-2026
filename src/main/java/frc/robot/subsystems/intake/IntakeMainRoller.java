@@ -79,7 +79,8 @@ public class IntakeMainRoller extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(80));
+          .withStatorCurrentLimit(Amps.of(120))
+          .withSupplyCurrentLimit(Amps.of(40));
 
   @AutoLog
   public static class MainRollerInputs {

@@ -52,7 +52,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ShooterPivot extends SubsystemBase {
 
-  double kP = 75;
+  double kP = 80;
   double kI = 0;
   double kD = 0;
   double kS = 0;
