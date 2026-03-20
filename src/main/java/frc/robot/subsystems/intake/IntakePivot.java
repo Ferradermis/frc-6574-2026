@@ -50,7 +50,7 @@ public class IntakePivot extends SubsystemBase {
   private Boolean isDeployed = false;
   private int fuelCount = 0;
 
-  double kP = 13;
+  double kP = 60;
   double kI = 0;
   double kD = 0;
   double kS = 0;
@@ -89,7 +89,7 @@ public class IntakePivot extends SubsystemBase {
           .withFeedforward(new ArmFeedforward(kS, kG, kV))
           .withSimFeedforward(new ArmFeedforward(kS, kG, kV))
           .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH)
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(21)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(105)))
           .withMotorInverted(true)
           .withIdleMode(MotorMode.BRAKE)
           .withStatorCurrentLimit(Amps.of(80))
@@ -99,13 +99,13 @@ public class IntakePivot extends SubsystemBase {
   private TalonFX intakePivotMotor = new TalonFX(Constants.CanIds.INTAKE_PIVOT_ID, Constants.CanIds.MECH_BUS);
 
   private SmartMotorController intakePivotMotorController =
-      new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX44(1), smcConfig);
+      new TalonFXWrapper(intakePivotMotor, DCMotor.getKrakenX60(1), smcConfig);
 
   private PivotConfig pivotConfig =
       new PivotConfig(intakePivotMotorController)
-          .withSoftLimits(Degrees.of(95), Degrees.of(-10))
-          .withHardLimit(Degrees.of(95), Degrees.of(-10))
-          .withStartingPosition(Degrees.of(90))
+          .withSoftLimits(Degrees.of(-10), Degrees.of(125))
+          .withHardLimit(Degrees.of(-10), Degrees.of(125))
+          .withStartingPosition(Degrees.of(119))
           .withMOI(Inches.of(12), Pounds.of(8))
           .withTelemetry("IntakePivotMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(positionConfig);

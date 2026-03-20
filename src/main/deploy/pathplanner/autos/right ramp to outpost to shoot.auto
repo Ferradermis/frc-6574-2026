@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Small Stow"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "start 4 to outpost"
+            "pathName": "right ramp to outpost"
           }
         },
         {
@@ -25,7 +31,20 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Stow"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              }
+            ]
           }
         }
       ]

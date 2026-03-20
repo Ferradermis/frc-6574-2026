@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "pos 2 to depot"
+            "pathName": "mid to depot"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Collect from depot"
+                  "pathName": "reverse Collect from depot"
                 }
               }
             ]
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "depot to shoot"
+            "pathName": "reverse depot to shoot"
           }
         },
         {

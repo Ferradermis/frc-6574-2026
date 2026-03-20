@@ -12,7 +12,6 @@ public class IntakeAuto extends SequentialCommandGroup {
     
     public IntakeAuto(AngularVelocity speed, AngularVelocity transitionSpeed) {
         addCommands(
-            RobotContainer.fuelRamp.setAngle(Degrees.of(-18)).withTimeout(0.25),
             RobotContainer.intakePivot.setAngle(Degrees.of(-8.5)).withTimeout(0.5),
             new ParallelCommandGroup(
                 RobotContainer.intakeMainRoller.setVelocity(speed),

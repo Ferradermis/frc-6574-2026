@@ -7,13 +7,17 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RPM;
 
 import com.ctre.phoenix6.CANBus;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -72,5 +76,16 @@ public final class Constants {
     public static final int SHOOTER_HOOD_ID = 22;
     public static final int SHOOTER_LEFT_ID = 23;
     public static final int SHOOTER_RIGHT_ID = 24;
+  }
+
+  public static class MechanismConstants {
+      public static final AngularVelocity SHOOTER_SPEED_CLOSE = RPM.of(2000);
+      public static final AngularVelocity SHOOTER_SPEED_FAR = RPM.of(2500);
+      public static final AngularVelocity SHOOTER_TRANSITION_SPEED = RPM.of(1500);
+      public static final AngularVelocity TRANSITION_SPEED_SHOOT = RPM.of(400);
+      public static final AngularVelocity TRANSITION_SPEED_INTAKE = RPM.of(-800);
+      public static final AngularVelocity INTAKE_SPEED = RPM.of(1000);
+      public static final AngularVelocity INTAKE_SPEED_DUMP = RPM.of(-1000);
+      public static final Angle INTAKE_HOME = Degrees.of(90);
   }
 }

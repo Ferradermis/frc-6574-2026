@@ -17,7 +17,6 @@ public class IntakeAutoStop extends SequentialCommandGroup {
             RobotContainer.transition.setVelocity(RPM.of(00)),
             new ParallelCommandGroup(
                 new StowIntake()
-                
         ));
     }
 }

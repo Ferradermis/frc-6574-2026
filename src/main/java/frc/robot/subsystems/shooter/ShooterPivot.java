@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -16,15 +17,21 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.drive.Drive;
 
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -45,7 +52,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ShooterPivot extends SubsystemBase {
 
-  double kP = 55;
+  double kP = 80;
   double kI = 0;
   double kD = 0;
   double kS = 0;
@@ -77,7 +84,7 @@ public class ShooterPivot extends SubsystemBase {
           .withClosedLoopController(
               kP, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
           .withSimClosedLoopController(
-              kP, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
+              35, kI, kD, RPM.of(50), RotationsPerSecondPerSecond.of(50))
           .withTelemetry("ShooterPivotMotor", TelemetryVerbosity.HIGH)
           .withGearing(new MechanismGearing(GearBox.fromReductionStages(210)))
           .withMotorInverted(false)
@@ -93,14 +100,14 @@ public class ShooterPivot extends SubsystemBase {
 
   private PivotConfig pivotConfig =
       new PivotConfig(shooterPivotMotorController)
-          .withSoftLimits(Degrees.of(72), Degrees.of(30))
-          .withHardLimit(Degrees.of(72), Degrees.of(30))
+          .withSoftLimits(Degrees.of(40), Degrees.of(72))
+          .withHardLimit(Degrees.of(40), Degrees.of(72))
           .withStartingPosition(Degrees.of(70))
           .withMOI(Inches.of(10), Pounds.of(1))
           .withTelemetry("ShooterPivotMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(positionConfig);
 
-  private Pivot pivot = new Pivot(pivotConfig);
+  public Pivot pivot = new Pivot(pivotConfig);
 
   private void updateInputs() {
     shooterPivotInputs.pivotPosition = pivot.getAngle();
@@ -112,6 +119,10 @@ public class ShooterPivot extends SubsystemBase {
 
   public Command setAngle(Angle angle) {
     return pivot.setAngle(angle);
+  }
+
+  public Command setOptimalAngle() {
+    return pivot.setAngle(Shooter::getDesiredHoodAngle);
   }
 
   public Command set(double dutycycle) {
