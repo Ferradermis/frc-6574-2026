@@ -8,27 +8,48 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.130048544607855,
-        "y": 2.5137558131269397
+        "x": 3.319992910051781,
+        "y": 2.4935449383834
       },
       "isLocked": false,
       "linkedName": "end shoot outpost"
     },
     {
       "anchor": {
-        "x": 1.5452428571428571,
-        "y": 3.7110714285714286
+        "x": 6.477855421686746,
+        "y": 2.1991445783132533
       },
       "prevControl": {
-        "x": 1.3197071177292556,
-        "y": 3.818930736223388
+        "x": 5.275807228915662,
+        "y": 2.3084216867469887
+      },
+      "nextControl": {
+        "x": 6.957848262569406,
+        "y": 2.1555088655057384
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.636192771084337,
+        "y": 1.9150240963855412
+      },
+      "prevControl": {
+        "x": 7.8381295297797955,
+        "y": 1.7676417857523714
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8988976377952665,
+      "rotationDegrees": -138.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "paths",
