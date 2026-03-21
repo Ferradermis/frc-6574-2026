@@ -282,7 +282,9 @@ public class RobotContainer {
 
     controller.leftTrigger().whileTrue(new Eject(RPM.of(1500), RPM.of(-750), RPM.of(-400)));
     controller.leftTrigger().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
-  }
+  
+    controller.y().onTrue(new GoToHome());
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

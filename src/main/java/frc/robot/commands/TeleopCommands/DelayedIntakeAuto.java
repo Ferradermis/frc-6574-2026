@@ -18,6 +18,6 @@ public class DelayedIntakeAuto extends SequentialCommandGroup {
             new ParallelCommandGroup(
                 RobotContainer.intakeMainRoller.setVelocity(speed),
                 RobotContainer.transition.setVelocity(transitionSpeed)
-        ).withTimeout(5));
+        ).withTimeout(2.5));
     }
 }
