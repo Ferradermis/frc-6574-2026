@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.49571428571428555,
-        "y": 0.666
+        "x": 7.67990361445783,
+        "y": 5.269831325301205
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.201768901569186,
-        "y": 0.9879457917261072
+        "x": 8.045123507530345,
+        "y": 5.201411404191317
       },
       "isLocked": false,
-      "linkedName": "human outpost dump"
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.062602409638554,
+        "y": 2.701819277108433
+      },
+      "prevControl": {
+        "x": 6.304665598658514,
+        "y": 2.7643125769211925
+      },
+      "nextControl": {
+        "x": 2.693646921497364,
+        "y": 1.8320581778324545
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,28 +36,22 @@
         "y": 2.330277108433736
       },
       "prevControl": {
-        "x": 2.04363666363027,
-        "y": 1.515141587749
+        "x": 3.1040367169719034,
+        "y": 2.5080685882367773
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "end shoot outpost"
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [
+  "rotationTargets": [
     {
-      "fieldPosition": {
-        "x": 4.625,
-        "y": 4.025
-      },
-      "rotationOffset": 180.0,
-      "minWaypointRelativePos": 0.9463869463869492,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
+      "waypointRelativePos": 1.0979527559055182,
+      "rotationDegrees": -138.0
     }
   ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
@@ -59,7 +69,7 @@
   "folder": "paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
