@@ -66,8 +66,8 @@ public final class Constants {
   public static class CanIds {
     public static final CANBus MECH_BUS = new CANBus("Subsystem");
 
-    public static final int INTAKE_MAIN_ROLLERS_ID = 15;
-    public static final int INTAKE_STATIC_ROLLER_ID = 16;
+    public static final int INTAKE_MAIN_ROLLER_LEFT_ID = 15;
+    public static final int INTAKE_MAIN_ROLLER_RIGHT_ID = 16;
     public static final int INTAKE_PIVOT_ID = 17;
     public static final int INTAKE_RAMP_PIVOT_ID = 18;
     public static final int TRANSITION_ID = 19;

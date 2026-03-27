@@ -7,25 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "right trench outpost "
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "outpost to shooting pos "
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "right shoot to fuel"
+            "pathName": "Left Ramp to Fuel Pile Sweep"
           }
         },
         {
@@ -35,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "intake from middle"
+                  "pathName": "Fuel Pile Sweep"
                 }
               },
               {
@@ -50,13 +32,13 @@
         {
           "type": "named",
           "data": {
-            "name": "StopIntake"
+            "name": "Stow"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "fuel to right shoot"
+            "pathName": "Sweep to Shoot"
           }
         },
         {

@@ -11,6 +11,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -50,6 +52,9 @@ public class IntakeMainRoller extends SubsystemBase {
     
   }
 
+  private TalonFX mainRollerLeftMotor = new TalonFX(Constants.CanIds.INTAKE_MAIN_ROLLER_LEFT_ID, Constants.CanIds.MECH_BUS);
+  private TalonFX mainRollerRightMotor = new TalonFX(Constants.CanIds.INTAKE_MAIN_ROLLER_RIGHT_ID, Constants.CanIds.MECH_BUS);
+
   private MechanismPositionConfig positionConfig =
       new MechanismPositionConfig()
           .withMaxRobotHeight(Meters.of(Meters.convertFrom(29.47, Inches)))
@@ -57,7 +62,33 @@ public class IntakeMainRoller extends SubsystemBase {
           .withMovementPlane(Plane.XZ)
           .withRelativePosition(new Translation3d(-0.209, 0, 0.342)); // TODO: Get Real position
 
-  private SmartMotorControllerConfig rollerConfig =
+  private SmartMotorControllerConfig leftRollerConfig =
+      new SmartMotorControllerConfig(this)
+          .withControlMode(ControlMode.CLOSED_LOOP)
+          // Feedback Constants (PID Constants)
+          .withClosedLoopController(
+              kP, kI, kD, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
+          .withSimClosedLoopController(
+              kP, kI, kD, RPM.of(6000), RotationsPerSecondPerSecond.of(500))
+          // Feedforward Constants
+          .withFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
+          .withSimFeedforward(new SimpleMotorFeedforward(kS, kV, kA))
+          // Telemetry name and verbosity level
+          .withTelemetry("IntakeStaticMotor", TelemetryVerbosity.HIGH)
+          // Gearing from the motor rotor to final shaft.
+          // In this example GearBox.fromReductionStages(3,4) is the same as
+          // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
+          // motor.
+          // You could also use .withGearing(12) which does the same thing.
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
+          // Motor properties to prevent over currenting.
+          .withMotorInverted(false)
+          .withIdleMode(MotorMode.COAST)
+          .withStatorCurrentLimit(Amps.of(120))
+          .withSupplyCurrentLimit(Amps.of(40))
+          .withFollowers(new Pair<Object,Boolean>(mainRollerRightMotor, true));
+
+  private SmartMotorControllerConfig rightRollerConfig =
       new SmartMotorControllerConfig(this)
           .withControlMode(ControlMode.CLOSED_LOOP)
           // Feedback Constants (PID Constants)
@@ -84,21 +115,26 @@ public class IntakeMainRoller extends SubsystemBase {
 
   @AutoLog
   public static class MainRollerInputs {
-    public AngularVelocity velocity = DegreesPerSecond.of(0);
-    public AngularVelocity setpoint = DegreesPerSecond.of(0);
-    public Voltage volts = Volts.of(0);
-    public Current current = Amps.of(0);
+    public AngularVelocity leftVelocity = DegreesPerSecond.of(0);
+    public AngularVelocity leftSetpoint = DegreesPerSecond.of(0);
+    public Voltage leftVolts = Volts.of(0);
+    public Current leftCurrent = Amps.of(0);
+
+    public AngularVelocity rightVelocity = DegreesPerSecond.of(0);
+    public AngularVelocity rightSetpoint = DegreesPerSecond.of(0);
+    public Voltage rightVolts = Volts.of(0);
+    public Current rightCurrent = Amps.of(0);
   }
 
   private final MainRollerInputsAutoLogged mainRollerInputs = new MainRollerInputsAutoLogged();
 
-  private TalonFX mainRollerMotor = new TalonFX(Constants.CanIds.INTAKE_MAIN_ROLLERS_ID, Constants.CanIds.MECH_BUS);
+  private SmartMotorController mainRollerMotorLeftController =
+      new TalonFXWrapper(mainRollerLeftMotor, DCMotor.getKrakenX60(1), leftRollerConfig);
+      private SmartMotorController mainRollerMotorRightController =
+      new TalonFXWrapper(mainRollerRightMotor, DCMotor.getKrakenX60(1), rightRollerConfig);
 
-  private SmartMotorController mainRollerMotorController =
-      new TalonFXWrapper(mainRollerMotor, DCMotor.getKrakenX60(1), rollerConfig);
-
-  private FlyWheelConfig mainRollerConfig =
-      new FlyWheelConfig(mainRollerMotorController)
+  private FlyWheelConfig mainRollerLeftConfig =
+      new FlyWheelConfig(mainRollerMotorLeftController)
           // Diameter of the flywheel.
           .withDiameter(Inches.of(1))
           // Mass of the flywheel.
@@ -109,46 +145,66 @@ public class IntakeMainRoller extends SubsystemBase {
           .withTelemetry("IntakeMainMech", TelemetryVerbosity.HIGH)
           .withMechanismPositionConfig(positionConfig);
 
-  private FlyWheel mainRoller = new FlyWheel(mainRollerConfig);
+  private FlyWheelConfig mainRollerRightConfig =
+      new FlyWheelConfig(mainRollerMotorRightController)
+          // Diameter of the flywheel.
+          .withDiameter(Inches.of(1))
+          // Mass of the flywheel.
+          .withMass(Pounds.of(5))
+          // Maximum speed of the shooter.
+          .withUpperSoftLimit(RPM.of(6000))
+          // Telemetry name and verbosity for the shooter.
+          .withTelemetry("IntakeMainMech", TelemetryVerbosity.HIGH)
+          .withMechanismPositionConfig(positionConfig);
+
+  private FlyWheel mainRollerLeft = new FlyWheel(mainRollerLeftConfig);
+
+  private FlyWheel mainRollerRight = new FlyWheel(mainRollerRightConfig);
 
   private void updateInputs() {
-    mainRollerInputs.velocity = mainRoller.getSpeed();
-    mainRollerInputs.setpoint =
-        mainRollerMotorController.getMechanismSetpointVelocity().orElse(RPM.of(0));
-    mainRollerInputs.volts = mainRollerMotorController.getVoltage();
-    mainRollerInputs.current = mainRollerMotorController.getStatorCurrent();
+    mainRollerInputs.leftVelocity = mainRollerLeft.getSpeed();
+    mainRollerInputs.leftSetpoint =
+        mainRollerMotorLeftController.getMechanismSetpointVelocity().orElse(RPM.of(0));
+    mainRollerInputs.leftVolts = mainRollerMotorLeftController.getVoltage();
+    mainRollerInputs.leftCurrent = mainRollerMotorLeftController.getStatorCurrent();
+
+    mainRollerInputs.rightVelocity = mainRollerRight.getSpeed();
+    mainRollerInputs.rightSetpoint =
+        mainRollerMotorRightController.getMechanismSetpointVelocity().orElse(RPM.of(0));
+    mainRollerInputs.rightVolts = mainRollerMotorRightController.getVoltage();
+    mainRollerInputs.rightCurrent = mainRollerMotorRightController.getStatorCurrent();
   }
 
   public AngularVelocity getVelocity() {
-    return mainRoller.getSpeed();
+    return mainRollerLeft.getSpeed();
   }
 
   public Command setVelocity(AngularVelocity speed) {
-    return mainRoller.run(speed);
+    return mainRollerLeft.run(speed);
   }
 
   public Command set(double dutyCycle) {
-    return mainRoller.set(dutyCycle);
+    return mainRollerLeft.set(dutyCycle);
   }
 
   public LoggedMechanismLigament2d getGeneratedMechanism2d() {
     return new LoggedMechanismLigament2d(
-        mainRoller.getName(),
-        mainRoller.getMechanismLigament().getLength(),
-        mainRoller.getMechanismLigament().getAngle(),
-        mainRoller.getMechanismLigament().getLineWeight(),
-        mainRoller.getMechanismLigament().getColor());
+        mainRollerLeft.getName(),
+        mainRollerLeft.getMechanismLigament().getLength(),
+        mainRollerLeft.getMechanismLigament().getAngle(),
+        mainRollerLeft.getMechanismLigament().getLineWeight(),
+        mainRollerLeft.getMechanismLigament().getColor());
   }
 
   @Override
   public void periodic() {
     updateInputs();
     Logger.processInputs("RobotState/IntakeMainRoller", mainRollerInputs);
-    mainRoller.updateTelemetry();
+    mainRollerLeft.updateTelemetry();
   }
 
   @Override
   public void simulationPeriodic() {
-    mainRoller.simIterate();
+    mainRollerLeft.simIterate();
   }
 }

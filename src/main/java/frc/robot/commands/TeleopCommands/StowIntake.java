@@ -10,7 +10,7 @@ public class StowIntake extends SequentialCommandGroup {
 
     public StowIntake() {
         addCommands(
-            RobotContainer.intakePivot.setAngle(Degrees.of(45)).withTimeout(0.5),
+            RobotContainer.intakePivot.setAngle(Degrees.of(35)).withTimeout(0.5),
             RobotContainer.intakeMainRoller.setVelocity(RPM.of(0))
         );
     }

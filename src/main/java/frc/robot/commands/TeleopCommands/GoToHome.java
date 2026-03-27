@@ -10,7 +10,7 @@ public class GoToHome extends SequentialCommandGroup {
 
     public GoToHome() {
         addCommands(
-            RobotContainer.intakePivot.setAngle(Degrees.of(119)).withTimeout(0.5),
+            RobotContainer.intakePivot.setAngle(Degrees.of(134)).withTimeout(0.5),
             RobotContainer.intakeMainRoller.setVelocity(RPM.of(0)),
             RobotContainer.shooterPivot.setAngle(Degrees.of(70))
         );

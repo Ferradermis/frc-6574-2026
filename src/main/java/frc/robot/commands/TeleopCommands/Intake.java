@@ -12,7 +12,7 @@ public class Intake extends SequentialCommandGroup {
     
     public Intake(AngularVelocity speed, AngularVelocity transitionSpeed) {
         addCommands(
-            RobotContainer.intakePivot.setAngle(Degrees.of(5)).withTimeout(0.5),
+            RobotContainer.intakePivot.setAngle(Degrees.of(0)).withTimeout(0.5),
             new ParallelCommandGroup(
                 RobotContainer.intakeMainRoller.setVelocity(speed),
                 RobotContainer.transition.setVelocity(transitionSpeed)

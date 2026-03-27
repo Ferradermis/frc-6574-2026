@@ -112,7 +112,8 @@ public class RobotContainer {
             new ModuleIOTalonFX(TunerConstants.BackRight));
         vision = new Vision(
             drive::addVisionMeasurement,
-            new VisionIOLimelight(camera0Name, drive::getRotation));
+            new VisionIOLimelight(camera0Name, drive::getRotation),
+            new VisionIOLimelight(camera1Name, drive::getRotation));
         intakeMainRoller = new IntakeMainRoller();
         intakePivot = new IntakePivot();
         shooter = new Shooter();
@@ -150,7 +151,8 @@ public class RobotContainer {
             new ModuleIOSim(TunerConstants.BackRight));
         vision = new Vision(
             drive::addVisionMeasurement,
-            new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose));
+            new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
+            new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
         intakeMainRoller = new IntakeMainRoller();
         intakePivot = new IntakePivot();
         shooter = new Shooter();
