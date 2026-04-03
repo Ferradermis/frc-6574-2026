@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Ramp to Fuel Pile Sweep"
+            "pathName": "Left Ramp Back Up"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Ramp over Ramp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Down"
           }
         },
         {
@@ -17,7 +29,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Fuel Pile Sweep"
+                  "pathName": "Left Ramp Sweep"
                 }
               },
               {
@@ -38,13 +50,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Sweep to Shoot"
+            "pathName": "Left Ramp Sweep to Shoot"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Shoot Without Stopping"
           }
         }
       ]

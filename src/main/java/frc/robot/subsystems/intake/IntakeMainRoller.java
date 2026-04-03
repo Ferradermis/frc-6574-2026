@@ -80,11 +80,11 @@ public class IntakeMainRoller extends SubsystemBase {
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
           // motor.
           // You could also use .withGearing(12) which does the same thing.
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(2, 1)))
           // Motor properties to prevent over currenting.
           .withMotorInverted(false)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(120))
+          .withStatorCurrentLimit(Amps.of(80))
           .withSupplyCurrentLimit(Amps.of(40))
           .withFollowers(new Pair<Object,Boolean>(mainRollerRightMotor, true));
 
@@ -106,11 +106,11 @@ public class IntakeMainRoller extends SubsystemBase {
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
           // motor.
           // You could also use .withGearing(12) which does the same thing.
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(2, 1)))
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(120))
+          .withStatorCurrentLimit(Amps.of(80))
           .withSupplyCurrentLimit(Amps.of(40));
 
   @AutoLog

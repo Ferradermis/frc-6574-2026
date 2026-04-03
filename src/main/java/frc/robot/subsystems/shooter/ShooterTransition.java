@@ -91,7 +91,8 @@ public class ShooterTransition extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(false)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(40));
+          .withStatorCurrentLimit(Amps.of(100))
+          .withSupplyCurrentLimit(Amps.of(40));
 
   private SmartMotorControllerConfig rightConfig =
       new SmartMotorControllerConfig(this)
@@ -115,7 +116,8 @@ public class ShooterTransition extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(40))
+          .withStatorCurrentLimit(Amps.of(100))
+          .withSupplyCurrentLimit(Amps.of(40))
           .withFollowers(new Pair<Object,Boolean>(leftMotor, true));
 
   @AutoLog

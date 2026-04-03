@@ -10,9 +10,9 @@ public class ShakeTheFuel extends SequentialCommandGroup {
 
     public ShakeTheFuel() {
         addCommands(
-            RobotContainer.intakePivot.setAngle(Degrees.of(35)).withTimeout(0.35),
+            RobotContainer.intakePivot.setAngle(Degrees.of(27)).withTimeout(0.35),
             RobotContainer.intakePivot.setAngle(Degrees.of(90)).withTimeout(0.35),
-            RobotContainer.intakePivot.setAngle(Degrees.of(35)).withTimeout(0.35)
+            RobotContainer.intakePivot.setAngle(Degrees.of(27)).withTimeout(0.35)
         );
     }
     

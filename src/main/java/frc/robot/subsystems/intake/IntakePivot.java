@@ -93,6 +93,7 @@ public class IntakePivot extends SubsystemBase {
           .withMotorInverted(true)
           .withIdleMode(MotorMode.BRAKE)
           .withStatorCurrentLimit(Amps.of(80))
+          .withSupplyCurrentLimit(Amps.of(40))
           .withClosedLoopRampRate(Seconds.of(0.25))
           .withOpenLoopRampRate(Seconds.of(0.25));
 

@@ -11,11 +11,11 @@ import frc.robot.subsystems.shooter.Shooter;
 public class Shoot extends SequentialCommandGroup {
     public Shoot(Drive drive) {
         addCommands(
-            RobotContainer.shooter.setOptimalVelocity().withTimeout(0.1),
+            RobotContainer.shooter.setOptimalVelocity().withTimeout(0.25),
             RobotContainer.shooterPivot.setOptimalAngle().withTimeout(1),
             RobotContainer.shooterTransition.setRightVelocity(Constants.MechanismConstants.SHOOTER_TRANSITION_SPEED).withTimeout(0.5),
             RobotContainer.transition.setVelocity(Constants.MechanismConstants.TRANSITION_SPEED_SHOOT).withTimeout(0.5),
-            new ShakeTheFuel(),
+            new WiggleFuel().withTimeout(0.5),
             RobotContainer.shooter.setOptimalVelocity()); 
     }
 }

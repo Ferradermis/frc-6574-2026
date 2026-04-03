@@ -76,7 +76,8 @@ public class Transition extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.BRAKE)
-          .withStatorCurrentLimit(Amps.of(40));
+          .withStatorCurrentLimit(Amps.of(100))
+          .withSupplyCurrentLimit(Amps.of(40));
 
   @AutoLog
   public static class TransitionInputs {

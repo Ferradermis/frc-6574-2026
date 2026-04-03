@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.871710843373494,
-        "y": 2.330277108433736
+        "x": 3.509,
+        "y": 5.882
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.130048544607855,
-        "y": 2.5137558131269397
+        "x": 2.3568053276559118,
+        "y": 5.882
       },
       "isLocked": false,
-      "linkedName": "end shoot outpost"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.5452428571428571,
-        "y": 3.7110714285714286
+        "x": 2.509,
+        "y": 5.882
       },
       "prevControl": {
-        "x": 1.3197071177292556,
-        "y": 3.818930736223388
+        "x": 3.518961591807481,
+        "y": 5.882
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -133.736
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
