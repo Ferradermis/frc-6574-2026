@@ -10,9 +10,9 @@ import frc.robot.RobotContainer;
 public class StopShooter extends SequentialCommandGroup {
     public StopShooter(AngularVelocity shooterSpeed, AngularVelocity shootertransSpeed, AngularVelocity transSpeed) {
         addCommands(
+            RobotContainer.transition.setVelocity(transSpeed).withTimeout(0.75),
             RobotContainer.shooter.setRightVelocity(shooterSpeed).withTimeout(0.25),
             RobotContainer.shooterTransition.setRightVelocity(shootertransSpeed).withTimeout(0.5),
-            RobotContainer.transition.setVelocity(transSpeed).withTimeout(0.75),
             RobotContainer.intakeMainRoller.setVelocity(RPM.of(0)));
     }
 }

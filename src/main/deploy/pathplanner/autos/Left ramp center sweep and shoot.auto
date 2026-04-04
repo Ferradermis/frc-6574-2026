@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Down"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Left Ramp Back Up"
@@ -14,12 +20,6 @@
           "type": "path",
           "data": {
             "pathName": "Left Ramp over Ramp"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Down"
           }
         },
         {

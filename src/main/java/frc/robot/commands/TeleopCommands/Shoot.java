@@ -15,7 +15,7 @@ public class Shoot extends SequentialCommandGroup {
             RobotContainer.shooterPivot.setOptimalAngle().withTimeout(1),
             RobotContainer.shooterTransition.setRightVelocity(Constants.MechanismConstants.SHOOTER_TRANSITION_SPEED).withTimeout(0.5),
             RobotContainer.transition.setVelocity(Constants.MechanismConstants.TRANSITION_SPEED_SHOOT).withTimeout(0.5),
-            new WiggleFuel().withTimeout(0.5),
+            new WiggleFuel().withTimeout(1.25),
             RobotContainer.shooter.setOptimalVelocity()); 
     }
 }

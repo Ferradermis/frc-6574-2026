@@ -90,7 +90,7 @@ public class ShooterTransition extends SubsystemBase {
           .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
           // Motor properties to prevent over currenting.
           .withMotorInverted(false)
-          .withIdleMode(MotorMode.COAST)
+          .withIdleMode(MotorMode.BRAKE)
           .withStatorCurrentLimit(Amps.of(100))
           .withSupplyCurrentLimit(Amps.of(40));
 
@@ -115,7 +115,7 @@ public class ShooterTransition extends SubsystemBase {
           .withGearing(new MechanismGearing(GearBox.fromReductionStages(2)))
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
-          .withIdleMode(MotorMode.COAST)
+          .withIdleMode(MotorMode.BRAKE)
           .withStatorCurrentLimit(Amps.of(100))
           .withSupplyCurrentLimit(Amps.of(40))
           .withFollowers(new Pair<Object,Boolean>(leftMotor, true));

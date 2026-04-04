@@ -185,11 +185,11 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Shoot", new ShootAuto(drive));
     NamedCommands.registerCommand("Shoot Without Stopping", new Shoot(drive));
-    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(3000), RPM.of(-800)));
-    NamedCommands.registerCommand("Delayed Intake", new DelayedIntakeAuto(RPM.of(3000), RPM.of(-800)));
+    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(2700), RPM.of(-800)));
+    NamedCommands.registerCommand("Delayed Intake", new DelayedIntakeAuto(RPM.of(2700), RPM.of(-800)));
     NamedCommands.registerCommand("StopIntake", new IntakeAutoStop());
-    NamedCommands.registerCommand("Intake Down", new Intake(RPM.of(3000), RPM.of(0)).withTimeout(0.5));
-    NamedCommands.registerCommand("Stow", new StowIntake().withTimeout(0.5));
+    NamedCommands.registerCommand("Intake Down", new Intake(RPM.of(2700), RPM.of(0)).withTimeout(0.75));
+    NamedCommands.registerCommand("Stow", new StowIntake().withTimeout(0.75));
     NamedCommands.registerCommand("Small Stow", intakePivot.setAngle(Degrees.of(105)).withTimeout(0.5));
     NamedCommands.registerCommand("Shaky Shaky", new ShakeTheFuel().withTimeout(2));
 
@@ -258,22 +258,22 @@ public class RobotContainer {
     controller.leftBumper().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    // controller
+    //     .b()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+    //                 drive)
+    //             .ignoringDisable(true));
 
-    controller.rightBumper().whileTrue(new Intake(RPM.of(2000), RPM.of(-800)));
+    controller.rightBumper().whileTrue(new Intake(RPM.of(2700), RPM.of(0)));
     controller.rightBumper().whileFalse(new Intake(RPM.of(0), RPM.of(0)));
 
-    controller.rightTrigger().whileTrue(new Shoot(drive));
-    controller.rightTrigger().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
-    //controller.leftBumper().whileTrue(new RunCommand(() -> fuelSim.launchFuel(MetersPerSecond.of(Shooter.ballVelocity), Shooter.getDesiredHoodAngle(), Degrees.of(180), Meters.of(1.3318))));
+    controller.a().whileTrue(new Shoot(drive));
+    controller.a().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
+    //controller.a().whileTrue(new RunCommand(() -> fuelSim.launchFuel(MetersPerSecond.of(Shooter.ballVelocity), Shooter.getDesiredHoodAngle(), Degrees.of(180), Meters.of(1.3318))));
 
     controller2.button(1).onTrue(new StowIntake());
     controller2.button(2).onTrue(new GoToHome());
