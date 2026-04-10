@@ -185,10 +185,10 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Shoot", new ShootAuto(drive));
     NamedCommands.registerCommand("Shoot Without Stopping", new Shoot(drive));
-    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(2700), RPM.of(-800)));
-    NamedCommands.registerCommand("Delayed Intake", new DelayedIntakeAuto(RPM.of(2700), RPM.of(-800)));
+    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(4000), RPM.of(-800)));
+    NamedCommands.registerCommand("Delayed Intake", new DelayedIntakeAuto(RPM.of(4000), RPM.of(-800)));
     NamedCommands.registerCommand("StopIntake", new IntakeAutoStop());
-    NamedCommands.registerCommand("Intake Down", new Intake(RPM.of(2700), RPM.of(0)).withTimeout(0.75));
+    NamedCommands.registerCommand("Intake Down", new Intake(RPM.of(4000), RPM.of(0)).withTimeout(0.75));
     NamedCommands.registerCommand("Stow", new StowIntake().withTimeout(0.75));
     NamedCommands.registerCommand("Small Stow", intakePivot.setAngle(Degrees.of(105)).withTimeout(0.5));
     NamedCommands.registerCommand("Shaky Shaky", new ShakeTheFuel().withTimeout(2));
@@ -268,7 +268,7 @@ public class RobotContainer {
     //                 drive)
     //             .ignoringDisable(true));
 
-    controller.rightBumper().whileTrue(new Intake(RPM.of(2700), RPM.of(0)));
+    controller.rightBumper().whileTrue(new Intake(RPM.of(4000), RPM.of(0)));
     controller.rightBumper().whileFalse(new Intake(RPM.of(0), RPM.of(0)));
 
     controller.a().whileTrue(new Shoot(drive));
@@ -282,13 +282,13 @@ public class RobotContainer {
     controller2.button(6).whileTrue(new ShootFailsafe(drive));
     controller2.button(6).whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
 
-    // controller.leftBumper().whileTrue(new DumpFuel(RPM.of(-2000), RPM.of(-800)));
-    // controller.leftBumper().whileFalse(new DumpFuel(RPM.of(0), RPM.of(0)));
+    controller.y().whileTrue(new DumpFuel(RPM.of(-3000), RPM.of(-800)));
+    controller.y().whileFalse(new DumpFuel(RPM.of(0), RPM.of(0)));
 
     controller.leftTrigger().whileTrue(new Eject(RPM.of(1500), RPM.of(-750), RPM.of(-400)));
     controller.leftTrigger().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
   
-    controller.y().onTrue(new GoToHome());
+    //controller.y().onTrue(new GoToHome());
 }
 
   /**
