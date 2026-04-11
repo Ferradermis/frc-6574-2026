@@ -40,6 +40,7 @@ import frc.robot.commands.TeleopCommands.Eject;
 import frc.robot.commands.TeleopCommands.GoToHome;
 import frc.robot.commands.TeleopCommands.Intake;
 import frc.robot.commands.TeleopCommands.IntakeAuto;
+import frc.robot.commands.TeleopCommands.IntakeAutoAdjustSpeed;
 import frc.robot.commands.TeleopCommands.IntakeAutoStop;
 import frc.robot.commands.TeleopCommands.ShakeTheFuel;
 import frc.robot.commands.TeleopCommands.Shoot;
@@ -269,7 +270,9 @@ public class RobotContainer {
     //                 drive)
     //             .ignoringDisable(true));
 
-    controller.rightBumper().whileTrue(new Intake(RPM.of(4000)));
+    // controller.rightBumper().whileTrue(new Intake(RPM.of(4000)));
+    // controller.rightBumper().whileFalse(new Intake(RPM.of(0)));
+    controller.rightBumper().whileTrue(new IntakeAutoAdjustSpeed(drive));
     controller.rightBumper().whileFalse(new Intake(RPM.of(0)));
 
     controller.a().whileTrue(new Shoot(drive));
