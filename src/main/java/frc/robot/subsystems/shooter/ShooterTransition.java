@@ -127,7 +127,7 @@ public class ShooterTransition extends SubsystemBase {
     public Voltage volts = Volts.of(0);
     public Current current = Amps.of(0);
   }
-
+  
   private final ShooterTransitionInputsAutoLogged shooterRightInputs =
       new ShooterTransitionInputsAutoLogged();
   private final ShooterTransitionInputsAutoLogged shooterLeftInputs =
