@@ -22,6 +22,8 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.drive.Drive;
 
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
@@ -47,10 +49,13 @@ public class IntakeMainRoller extends SubsystemBase {
   double kS = 0;
   double kV = 0.2;
   double kA = 0;
+  Drive driveSubsystem;
+  AngularVelocity velocity;
 
-  public IntakeMainRoller() {
-    
+  public IntakeMainRoller(Drive drive) {
+    driveSubsystem = drive;
   }
+
 
   private TalonFX mainRollerLeftMotor = new TalonFX(Constants.CanIds.INTAKE_MAIN_ROLLER_LEFT_ID, Constants.CanIds.MECH_BUS);
   private TalonFX mainRollerRightMotor = new TalonFX(Constants.CanIds.INTAKE_MAIN_ROLLER_RIGHT_ID, Constants.CanIds.MECH_BUS);
@@ -179,6 +184,10 @@ public class IntakeMainRoller extends SubsystemBase {
     return mainRollerLeft.getSpeed();
   }
 
+  public Command setVelocityWithDriveSpeed() {
+    return mainRollerLeft.run(velocity);
+  }
+
   public Command setVelocity(AngularVelocity speed) {
     return mainRollerLeft.run(speed);
   }
@@ -201,6 +210,16 @@ public class IntakeMainRoller extends SubsystemBase {
     updateInputs();
     Logger.processInputs("RobotState/IntakeMainRoller", mainRollerInputs);
     mainRollerLeft.updateTelemetry();
+    double driveVelocity = driveSubsystem.getModuleVelocityAverage();
+    if (driveVelocity < 1.5) {
+            velocity = RPM.of(2500);
+        }
+        else if (driveVelocity >= 1.5 && driveVelocity < 3) {
+            velocity = RPM.of(3000);
+        }
+        else {
+            velocity = RPM.of(4000);
+        }
   }
 
   @Override
