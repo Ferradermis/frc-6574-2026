@@ -16,6 +16,6 @@ public class IntakeAuto extends SequentialCommandGroup {
             new ParallelCommandGroup(
                 RobotContainer.intakeMainRoller.setVelocity(speed).withTimeout(3)),
                 //RobotContainer.transition.setVelocity(transitionSpeed)).withTimeout(3),
-            new Intake(RPM.of(0), RPM.of(0)).withTimeout(0.1));
+            new Intake(RPM.of(0)).withTimeout(0.1));
     }
 }

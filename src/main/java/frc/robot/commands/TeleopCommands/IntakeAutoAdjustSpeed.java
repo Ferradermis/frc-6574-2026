@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 
-public class Intake extends SequentialCommandGroup {
+public class IntakeAutoAdjustSpeed extends SequentialCommandGroup {
     
-    public Intake(AngularVelocity speed) {
+    public IntakeAutoAdjustSpeed(AngularVelocity speed) {
         addCommands(
             RobotContainer.intakePivot.setAngle(Degrees.of(0)).withTimeout(0.5),
             new ParallelCommandGroup(
