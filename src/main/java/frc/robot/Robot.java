@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -38,7 +39,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
   private NetworkTableInstance ntInstance;
   private NetworkTable ferraUiTable;
-  private double lastNtPublishTime = 0.0;
+  private Notifier ntNotifier;
 
   public Robot() {
     // Record metadata
@@ -94,6 +95,10 @@ public class Robot extends LoggedRobot {
 
     // Start the NetworkTables server (if not already started)
     ntInstance.startServer();
+
+    ntNotifier = new Notifier(this::SendFerraUI);
+    ntNotifier.startPeriodic(0.1);
+
   }
 
   /** This function is called periodically during all modes. */
@@ -113,11 +118,7 @@ public class Robot extends LoggedRobot {
     // Return to non-RT thread priority (do not modify the first argument)
     Threads.setCurrentThreadPriority(false, 10);
 
-    double now = Timer.getFPGATimestamp();
-    if (now - lastNtPublishTime >= 0.1) { // 10Hz
-        lastNtPublishTime = now;
-        SendFerraUI();
-    }
+    
 
     
   }
