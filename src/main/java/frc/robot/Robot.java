@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -37,6 +38,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
   private NetworkTableInstance ntInstance;
   private NetworkTable ferraUiTable;
+  private double lastNtPublishTime = 0.0;
 
   public Robot() {
     // Record metadata
@@ -89,7 +91,6 @@ public class Robot extends LoggedRobot {
     ntInstance = NetworkTableInstance.getDefault();
     ferraUiTable = ntInstance.getTable("ferraui");
 
-    //addPeriodic(this::SendFerraUI,0.1);
 
     // Start the NetworkTables server (if not already started)
     ntInstance.startServer();
@@ -108,14 +109,20 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    SendFerraUI();
+    
     // Return to non-RT thread priority (do not modify the first argument)
     Threads.setCurrentThreadPriority(false, 10);
+
+    double now = Timer.getFPGATimestamp();
+    if (now - lastNtPublishTime >= 0.1) { // 10Hz
+        lastNtPublishTime = now;
+        SendFerraUI();
+    }
 
     
   }
 
-  public void SendFerraUI(){
+  private void SendFerraUI(){
     // Publish the battery voltage to NetworkTables
     double batteryVoltage = RobotController.getBatteryVoltage();
     double matchTime=DriverStation.getMatchTime();
@@ -127,13 +134,13 @@ public class Robot extends LoggedRobot {
     }
 
     
-    if (!ferraUiTable.getEntry("matchNumber").setInteger(DriverStation.getMatchNumber())){
-      System.err.println("Error writing match number to /ferraui/matchNumber");
-    }
+    // if (!ferraUiTable.getEntry("matchNumber").setInteger(DriverStation.getMatchNumber())){
+    //   System.err.println("Error writing match number to /ferraui/matchNumber");
+    // }
 
-    if (!ferraUiTable.getEntry("matchType").setString(DriverStation.getMatchType().toString())){
-      System.err.println("Error writing match type to /ferraui/matchType");
-    }
+    // if (!ferraUiTable.getEntry("matchType").setString(DriverStation.getMatchType().toString())){
+    //   System.err.println("Error writing match type to /ferraui/matchType");
+    // }
 
     if (!ferraUiTable.getEntry("gameSpecificMessage").setString(DriverStation.getGameSpecificMessage())){
       System.err.println("Error writing game specific message to /ferraui/gameSpecificMessage");
