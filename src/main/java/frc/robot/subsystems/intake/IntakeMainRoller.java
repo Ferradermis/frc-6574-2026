@@ -50,7 +50,8 @@ public class IntakeMainRoller extends SubsystemBase {
   double kV = 0.2;
   double kA = 0;
   Drive driveSubsystem;
-  AngularVelocity velocity;
+  AngularVelocity velocity = RPM.of(2500);
+  boolean isOn = false;
 
   public IntakeMainRoller(Drive drive) {
     driveSubsystem = drive;
@@ -89,8 +90,8 @@ public class IntakeMainRoller extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(false)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(80))
-          .withSupplyCurrentLimit(Amps.of(40))
+          .withStatorCurrentLimit(Amps.of(60))
+          .withSupplyCurrentLimit(Amps.of(35))
           .withFollowers(new Pair<Object,Boolean>(mainRollerRightMotor, true));
 
   private SmartMotorControllerConfig rightRollerConfig =
@@ -115,8 +116,8 @@ public class IntakeMainRoller extends SubsystemBase {
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
           .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(80))
-          .withSupplyCurrentLimit(Amps.of(40));
+          .withStatorCurrentLimit(Amps.of(60))
+          .withSupplyCurrentLimit(Amps.of(35));
 
   @AutoLog
   public static class MainRollerInputs {
@@ -184,10 +185,6 @@ public class IntakeMainRoller extends SubsystemBase {
     return mainRollerLeft.getSpeed();
   }
 
-  public Command setVelocityWithDriveSpeed() {
-    return mainRollerLeft.run(velocity);
-  }
-
   public Command setVelocity(AngularVelocity speed) {
     return mainRollerLeft.run(speed);
   }
@@ -205,21 +202,15 @@ public class IntakeMainRoller extends SubsystemBase {
         mainRollerLeft.getMechanismLigament().getColor());
   }
 
+  public AngularVelocity getVelocityBasedOnDrive(){
+    return velocity;
+  }
+
   @Override
   public void periodic() {
     updateInputs();
     Logger.processInputs("RobotState/IntakeMainRoller", mainRollerInputs);
     mainRollerLeft.updateTelemetry();
-    double driveVelocity = driveSubsystem.getModuleVelocityAverage();
-    if (driveVelocity < 1.5) {
-            velocity = RPM.of(2500);
-        }
-        else if (driveVelocity >= 1.5 && driveVelocity < 3) {
-            velocity = RPM.of(3000);
-        }
-        else {
-            velocity = RPM.of(4000);
-        }
   }
 
   @Override

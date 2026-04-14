@@ -40,7 +40,6 @@ import frc.robot.commands.TeleopCommands.Eject;
 import frc.robot.commands.TeleopCommands.GoToHome;
 import frc.robot.commands.TeleopCommands.Intake;
 import frc.robot.commands.TeleopCommands.IntakeAuto;
-import frc.robot.commands.TeleopCommands.IntakeAutoAdjustSpeed;
 import frc.robot.commands.TeleopCommands.IntakeAutoStop;
 import frc.robot.commands.TeleopCommands.ShakeTheFuel;
 import frc.robot.commands.TeleopCommands.Shoot;
@@ -117,7 +116,7 @@ public class RobotContainer {
             drive::addVisionMeasurement,
             new VisionIOLimelight(camera0Name, drive::getRotation),
             new VisionIOLimelight(camera1Name, drive::getRotation));
-        intakeMainRoller = new IntakeMainRoller();
+        intakeMainRoller = new IntakeMainRoller(drive);
         intakePivot = new IntakePivot();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
@@ -156,7 +155,7 @@ public class RobotContainer {
             drive::addVisionMeasurement,
             new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
             new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
-        intakeMainRoller = new IntakeMainRoller();
+        intakeMainRoller = new IntakeMainRoller(drive);
         intakePivot = new IntakePivot();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
@@ -175,7 +174,7 @@ public class RobotContainer {
             new ModuleIO() {},
             new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        intakeMainRoller = new IntakeMainRoller();
+        intakeMainRoller = new IntakeMainRoller(drive);
         intakePivot = new IntakePivot();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
@@ -270,9 +269,7 @@ public class RobotContainer {
     //                 drive)
     //             .ignoringDisable(true));
 
-    // controller.rightBumper().whileTrue(new Intake(RPM.of(4000)));
-    // controller.rightBumper().whileFalse(new Intake(RPM.of(0)));
-    controller.rightBumper().whileTrue(new IntakeAutoAdjustSpeed(drive));
+    controller.rightBumper().whileTrue(new Intake(RPM.of(2500)));
     controller.rightBumper().whileFalse(new Intake(RPM.of(0)));
 
     controller.a().whileTrue(new Shoot(drive));
