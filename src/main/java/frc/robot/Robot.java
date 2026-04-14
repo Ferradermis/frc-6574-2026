@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -88,6 +89,8 @@ public class Robot extends LoggedRobot {
     ntInstance = NetworkTableInstance.getDefault();
     ferraUiTable = ntInstance.getTable("ferraui");
 
+    //addPeriodic(this::SendFerraUI,0.1);
+
     // Start the NetworkTables server (if not already started)
     ntInstance.startServer();
   }
@@ -105,10 +108,14 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
+    SendFerraUI();
     // Return to non-RT thread priority (do not modify the first argument)
     Threads.setCurrentThreadPriority(false, 10);
 
+    
+  }
+
+  public void SendFerraUI(){
     // Publish the battery voltage to NetworkTables
     double batteryVoltage = RobotController.getBatteryVoltage();
     double matchTime=DriverStation.getMatchTime();

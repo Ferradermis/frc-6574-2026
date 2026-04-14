@@ -276,7 +276,7 @@ public class RobotContainer {
     controller.a().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
     //controller.a().whileTrue(new RunCommand(() -> fuelSim.launchFuel(MetersPerSecond.of(Shooter.ballVelocity), Shooter.getDesiredHoodAngle(), Degrees.of(180), Meters.of(1.3318))));
 
-    controller2.button(1).onTrue(new StowIntake());
+    controller2.button(1).onTrue(new WiggleFuelForDump());
     controller2.button(2).onTrue(new GoToHome());
     controller2.button(4).onTrue(new WiggleFuel());
     controller2.button(5).onTrue(new ShakeTheFuel());
@@ -289,7 +289,7 @@ public class RobotContainer {
     controller.leftTrigger().whileTrue(new Eject(RPM.of(1500), RPM.of(-750), RPM.of(-400)));
     controller.leftTrigger().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
 
-    controller.x().onTrue(new WiggleFuelForDump());
+    //controller.x().onTrue(new WiggleFuelForDump());
     //controller.y().onTrue(new GoToHome());
 }
 

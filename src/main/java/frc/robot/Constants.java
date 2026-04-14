@@ -82,7 +82,7 @@ public final class Constants {
       public static final AngularVelocity SHOOTER_SPEED_CLOSE = RPM.of(2000);
       public static final AngularVelocity SHOOTER_SPEED_FAR = RPM.of(2500);
       public static final AngularVelocity SHOOTER_TRANSITION_SPEED = RPM.of(1500);
-      public static final AngularVelocity TRANSITION_SPEED_SHOOT = RPM.of(400);
+      public static final AngularVelocity TRANSITION_SPEED_SHOOT = RPM.of(600);
       public static final AngularVelocity TRANSITION_SPEED_INTAKE = RPM.of(-800);
       public static final AngularVelocity INTAKE_SPEED = RPM.of(1000);
       public static final AngularVelocity INTAKE_SPEED_DUMP = RPM.of(-1000);
