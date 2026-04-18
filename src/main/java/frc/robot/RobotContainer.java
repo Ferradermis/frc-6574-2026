@@ -193,6 +193,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stow", new StowIntake().withTimeout(0.75));
     NamedCommands.registerCommand("Small Stow", intakePivot.setAngle(Degrees.of(105)).withTimeout(0.5));
     NamedCommands.registerCommand("Shaky Shaky", new ShakeTheFuel().withTimeout(2));
+    NamedCommands.registerCommand("Wiggle Waggle", new WiggleFuel().withTimeout(2));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
