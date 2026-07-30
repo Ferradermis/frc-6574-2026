@@ -186,10 +186,10 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Shoot", new ShootAuto(drive));
     NamedCommands.registerCommand("Shoot Without Stopping", new Shoot(drive));
-    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(4000), RPM.of(-800)));
-    NamedCommands.registerCommand("Delayed Intake", new DelayedIntakeAuto(RPM.of(4000), RPM.of(-800)));
+    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(3000), RPM.of(-800)));
+    NamedCommands.registerCommand("Delayed Intake", new DelayedIntakeAuto(RPM.of(3000), RPM.of(-800)));
     NamedCommands.registerCommand("StopIntake", new IntakeAutoStop());
-    NamedCommands.registerCommand("Intake Down", new Intake(RPM.of(4000)).withTimeout(0.75));
+    NamedCommands.registerCommand("Intake Down", new Intake(RPM.of(3000)).withTimeout(0.75));
     NamedCommands.registerCommand("Stow", new StowIntake().withTimeout(0.75));
     NamedCommands.registerCommand("Small Stow", intakePivot.setAngle(Degrees.of(105)).withTimeout(0.5));
     NamedCommands.registerCommand("Shaky Shaky", new ShakeTheFuel().withTimeout(2));
@@ -270,7 +270,7 @@ public class RobotContainer {
     //                 drive)
     //             .ignoringDisable(true));
 
-    controller.rightBumper().whileTrue(new Intake(RPM.of(2500)));
+    controller.rightBumper().whileTrue(new Intake(RPM.of(3000)));
     controller.rightBumper().whileFalse(new Intake(RPM.of(0)));
 
     controller.a().whileTrue(new Shoot(drive));
