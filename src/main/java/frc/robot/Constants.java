@@ -86,6 +86,8 @@ public final class Constants {
       public static final AngularVelocity TRANSITION_SPEED_INTAKE = RPM.of(-800);
       public static final AngularVelocity INTAKE_SPEED = RPM.of(1000);
       public static final AngularVelocity INTAKE_SPEED_DUMP = RPM.of(-1000);
-      public static final Angle INTAKE_HOME = Degrees.of(90);
+    public static final Angle INTAKE_HOME = Degrees.of(90);
+    // Angle used to stow the intake (degrees)
+    public static final Angle INTAKE_STOW_ANGLE = Degrees.of(27);
   }
 }
