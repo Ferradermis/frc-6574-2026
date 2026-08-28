@@ -41,7 +41,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ShooterTransition extends SubsystemBase {
 
-  double kP = 3.5;
+  double kP = 0.1;
   double kI = 0;
   double kD = 0;
   double kS = 0;
@@ -90,8 +90,9 @@ public class ShooterTransition extends SubsystemBase {
           .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
           // Motor properties to prevent over currenting.
           .withMotorInverted(false)
-          .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(70));
+          .withIdleMode(MotorMode.BRAKE)
+          .withStatorCurrentLimit(Amps.of(100))
+          .withSupplyCurrentLimit(Amps.of(40));
 
   private SmartMotorControllerConfig rightConfig =
       new SmartMotorControllerConfig(this)
@@ -111,11 +112,12 @@ public class ShooterTransition extends SubsystemBase {
           // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your
           // motor.
           // You could also use .withGearing(12) which does the same thing.
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(2)))
           // Motor properties to prevent over currenting.
           .withMotorInverted(true)
-          .withIdleMode(MotorMode.COAST)
-          .withStatorCurrentLimit(Amps.of(70))
+          .withIdleMode(MotorMode.BRAKE)
+          .withStatorCurrentLimit(Amps.of(100))
+          .withSupplyCurrentLimit(Amps.of(40))
           .withFollowers(new Pair<Object,Boolean>(leftMotor, true));
 
   @AutoLog
@@ -125,7 +127,7 @@ public class ShooterTransition extends SubsystemBase {
     public Voltage volts = Volts.of(0);
     public Current current = Amps.of(0);
   }
-
+  
   private final ShooterTransitionInputsAutoLogged shooterRightInputs =
       new ShooterTransitionInputsAutoLogged();
   private final ShooterTransitionInputsAutoLogged shooterLeftInputs =

@@ -75,12 +75,12 @@ public class TunerConstants {
     public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.04);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
-    // This may need to be tuned to your individual robot
+    // This may need to be tuned to your individual robo
     private static final double kCoupleRatio = 3.5714285714285716;
 
     private static final double kDriveGearRatio = 6.122448979591837;
     private static final double kSteerGearRatio = 21.428571428571427;
-    private static final Distance kWheelRadius = Inches.of(2);
+    private static final Distance kWheelRadius = Inches.of(1.810);
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;

@@ -1,0 +1,74 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Down"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Ramp Back Up"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Ramp over Ramp"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Ramp Sweep"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Ramp Sweep to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Without Stopping"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shaky Shaky"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "autos",
+  "choreoAuto": false
+}

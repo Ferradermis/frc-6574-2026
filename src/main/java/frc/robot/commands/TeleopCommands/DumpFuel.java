@@ -12,9 +12,8 @@ public class DumpFuel extends SequentialCommandGroup {
     
     public DumpFuel(AngularVelocity speed, AngularVelocity transitionSpeed) {
         addCommands(
-            new StowIntake().withTimeout(0.75),
+            RobotContainer.intakePivot.setAngle(Degrees.of(10)).withTimeout(0.5),
             new ParallelCommandGroup(
-                RobotContainer.intakeStaticRoller.setVelocity(speed),
                 RobotContainer.intakeMainRoller.setVelocity(speed),
                 RobotContainer.transition.setVelocity(transitionSpeed)
         ));

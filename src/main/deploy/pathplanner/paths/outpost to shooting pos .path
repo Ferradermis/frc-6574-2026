@@ -1,0 +1,65 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.49571428571428555,
+        "y": 0.666
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.201768901569186,
+        "y": 0.9879457917261072
+      },
+      "isLocked": false,
+      "linkedName": "human outpost dump"
+    },
+    {
+      "anchor": {
+        "x": 2.871710843373494,
+        "y": 2.330277108433736
+      },
+      "prevControl": {
+        "x": 2.04363666363027,
+        "y": 1.515141587749
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "end shoot outpost"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.625,
+        "y": 4.025
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 0.9463869463869492,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -133.736
+  },
+  "reversed": false,
+  "folder": "paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

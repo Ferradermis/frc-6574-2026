@@ -18,6 +18,9 @@ import static frc.robot.subsystems.vision.VisionConstants.*;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -25,15 +28,28 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Dimensions;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.TeleopCommands.DelayedIntakeAuto;
 import frc.robot.commands.TeleopCommands.DumpFuel;
+import frc.robot.commands.TeleopCommands.Eject;
 import frc.robot.commands.TeleopCommands.GoToHome;
 import frc.robot.commands.TeleopCommands.Intake;
+import frc.robot.commands.TeleopCommands.IntakeAuto;
+import frc.robot.commands.TeleopCommands.IntakeAutoStop;
+import frc.robot.commands.TeleopCommands.ShakeTheFuel;
 import frc.robot.commands.TeleopCommands.Shoot;
+import frc.robot.commands.TeleopCommands.ShootAuto;
+import frc.robot.commands.TeleopCommands.ShootFailsafe;
+import frc.robot.commands.TeleopCommands.StartShooter;
+import frc.robot.commands.TeleopCommands.StopShooter;
 import frc.robot.commands.TeleopCommands.StowIntake;
+import frc.robot.commands.TeleopCommands.WiggleFuel;
+import frc.robot.commands.TeleopCommands.WiggleFuelForDump;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
@@ -42,10 +58,8 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.intake.IntakeFuelRamp;
 import frc.robot.subsystems.intake.IntakeMainRoller;
 import frc.robot.subsystems.intake.IntakePivot;
-import frc.robot.subsystems.intake.IntakeStaticRoller;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPivot;
 import frc.robot.subsystems.shooter.ShooterTransition;
@@ -68,10 +82,8 @@ public class RobotContainer {
   // Subsystems
   public static Drive drive;
   private final Vision vision;
-  public static IntakeFuelRamp fuelRamp;
   public static IntakeMainRoller intakeMainRoller;
   public static IntakePivot intakePivot;
-  public static IntakeStaticRoller intakeStaticRoller;
   public static Shooter shooter;
   public static ShooterPivot shooterPivot;
   public static ShooterTransition shooterTransition;
@@ -82,6 +94,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandGenericHID controller2 = new CommandGenericHID(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -101,11 +114,10 @@ public class RobotContainer {
             new ModuleIOTalonFX(TunerConstants.BackRight));
         vision = new Vision(
             drive::addVisionMeasurement,
-            new VisionIOLimelight(camera0Name, drive::getRotation));
-        fuelRamp = new IntakeFuelRamp();
-        intakeMainRoller = new IntakeMainRoller();
+            new VisionIOLimelight(camera0Name, drive::getRotation),
+            new VisionIOLimelight(camera1Name, drive::getRotation));
+        intakeMainRoller = new IntakeMainRoller(drive);
         intakePivot = new IntakePivot();
-        intakeStaticRoller = new IntakeStaticRoller();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
@@ -141,11 +153,10 @@ public class RobotContainer {
             new ModuleIOSim(TunerConstants.BackRight));
         vision = new Vision(
             drive::addVisionMeasurement,
-            new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose));
-        fuelRamp = new IntakeFuelRamp();
-        intakeMainRoller = new IntakeMainRoller();
+            new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
+            new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+        intakeMainRoller = new IntakeMainRoller(drive);
         intakePivot = new IntakePivot();
-        intakeStaticRoller = new IntakeStaticRoller();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
@@ -163,10 +174,8 @@ public class RobotContainer {
             new ModuleIO() {},
             new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        fuelRamp = new IntakeFuelRamp();
-        intakeMainRoller = new IntakeMainRoller();
+        intakeMainRoller = new IntakeMainRoller(drive);
         intakePivot = new IntakePivot();
-        intakeStaticRoller = new IntakeStaticRoller();
         shooter = new Shooter();
         shooterPivot = new ShooterPivot();
         shooterTransition = new ShooterTransition();
@@ -174,6 +183,17 @@ public class RobotContainer {
         //sim = new RobotSim();
         break;
     }
+
+    NamedCommands.registerCommand("Shoot", new ShootAuto(drive));
+    NamedCommands.registerCommand("Shoot Without Stopping", new Shoot(drive));
+    NamedCommands.registerCommand("Intake", new IntakeAuto(RPM.of(3000), RPM.of(-800)));
+    NamedCommands.registerCommand("Delayed Intake", new DelayedIntakeAuto(RPM.of(3000), RPM.of(-800)));
+    NamedCommands.registerCommand("StopIntake", new IntakeAutoStop());
+    NamedCommands.registerCommand("Intake Down", new Intake(RPM.of(3000)).withTimeout(0.75));
+    NamedCommands.registerCommand("Stow", new StowIntake().withTimeout(0.75));
+    NamedCommands.registerCommand("Small Stow", intakePivot.setAngle(Degrees.of(105)).withTimeout(0.5));
+    NamedCommands.registerCommand("Shaky Shaky", new ShakeTheFuel().withTimeout(2));
+    NamedCommands.registerCommand("Wiggle Waggle", new WiggleFuel().withTimeout(2));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -205,17 +225,21 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    SlewRateLimiter translationYLimiter = new SlewRateLimiter(2);
+    SlewRateLimiter translationXLimiter = new SlewRateLimiter(2);
+    SlewRateLimiter rotationLimiter = new SlewRateLimiter(4);
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> translationYLimiter.calculate(-controller.getLeftY()),
+            () -> translationXLimiter.calculate(-controller.getLeftX()),
+            () -> rotationLimiter.calculate(-controller.getRightX())));
 
     // Lock to 0° when A button is held
-    controller
-        .a()
+    controller2
+        .button(3)
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
@@ -223,44 +247,52 @@ public class RobotContainer {
                 () -> -controller.getLeftX(),
                 () -> drive.getAngleToHub()));
 
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> -controller.getLeftY(),
+    //             () -> -controller.getLeftX(),
+    //             () -> drive.getAngleToHub()));
+
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller.leftBumper().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    // controller
+    //     .b()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+    //                 drive)
+    //             .ignoringDisable(true));
 
-    // controller.leftTrigger().whileTrue(shooterTransition.setRightVelocity(RPM.of(500)));
-    // controller.leftTrigger().whileFalse(shooterTransition.setRightVelocity(RPM.of(0)));
+    controller.rightBumper().whileTrue(new Intake(RPM.of(3000)));
+    controller.rightBumper().whileFalse(new Intake(RPM.of(0)));
 
-    // controller.rightTrigger().whileTrue(shooter.setRightVelocity(RPM.of(2000)));
-    // controller.rightTrigger().whileFalse(shooter.setRightVelocity(RPM.of(0)));
+    controller.a().whileTrue(new Shoot(drive));
+    controller.a().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
+    //controller.a().whileTrue(new RunCommand(() -> fuelSim.launchFuel(MetersPerSecond.of(Shooter.ballVelocity), Shooter.getDesiredHoodAngle(), Degrees.of(180), Meters.of(1.3318))));
 
-    // controller.rightBumper().whileTrue(transition.setVelocity(RPM.of(800)));
-    // controller.rightBumper().whileFalse(transition.setVelocity(RPM.of(0)));
+    controller2.button(1).onTrue(new WiggleFuelForDump());
+    controller2.button(2).onTrue(new GoToHome());
+    controller2.button(4).onTrue(new WiggleFuel());
+    controller2.button(5).onTrue(new ShakeTheFuel());
+    controller2.button(6).whileTrue(new ShootFailsafe(drive));
+    controller2.button(6).whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
 
-    // controller.povRight().onTrue(fuelRamp.setAngle(Degrees.of(90)));
-    // controller.povLeft().onTrue(fuelRamp.setAngle(Degrees.of(-19)));
+    controller.y().whileTrue(new DumpFuel(RPM.of(-3000), RPM.of(-800)));
+    controller.y().whileFalse(new DumpFuel(RPM.of(0), RPM.of(0)));
 
-    controller.rightBumper().whileTrue(new Intake(RPM.of(3000), RPM.of(-800)));
-    controller.rightBumper().whileFalse(new Intake(RPM.of(0), RPM.of(0)));
+    controller.leftTrigger().whileTrue(new Eject(RPM.of(1500), RPM.of(-750), RPM.of(-400)));
+    controller.leftTrigger().whileFalse(new StopShooter(RPM.of(0), RPM.of(0), RPM.of(0)));
 
-    controller.leftBumper().whileTrue(new Shoot(RPM.of(2000), RPM.of(1500), RPM.of(800)));
-    controller.leftBumper().whileFalse(new Shoot(RPM.of(0), RPM.of(0), RPM.of(0)));
-
-    controller.povDown().onTrue(new StowIntake());
-    controller.povUp().onTrue(new GoToHome());
-
-    controller.rightTrigger().whileTrue(new DumpFuel(RPM.of(-3000), RPM.of(-800)));
-    controller.rightTrigger().whileFalse(new DumpFuel(RPM.of(0), RPM.of(0)));
-  }
+    //controller.x().onTrue(new WiggleFuelForDump());
+    //controller.y().onTrue(new GoToHome());
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

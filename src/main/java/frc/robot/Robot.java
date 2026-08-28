@@ -7,9 +7,20 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import java.util.Optional;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -26,6 +37,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private NetworkTableInstance ntInstance;
+  private NetworkTable ferraUiTable;
+  private Notifier ntNotifier;
 
   public Robot() {
     // Record metadata
@@ -72,6 +86,21 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
   }
 
+  @Override
+  public void robotInit() {
+    // Get the NetworkTables instance and create a table
+    ntInstance = NetworkTableInstance.getDefault();
+    ferraUiTable = ntInstance.getTable("ferraui");
+
+
+    // Start the NetworkTables server (if not already started)
+    ntInstance.startServer();
+
+    ntNotifier = new Notifier(this::SendFerraUI);
+    ntNotifier.startPeriodic(0.1);
+
+  }
+
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
@@ -85,9 +114,54 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
+    
     // Return to non-RT thread priority (do not modify the first argument)
     Threads.setCurrentThreadPriority(false, 10);
+
+    
+
+    
+  }
+
+  private void SendFerraUI(){
+    // Publish the battery voltage to NetworkTables
+    double batteryVoltage = RobotController.getBatteryVoltage();
+    double matchTime=DriverStation.getMatchTime();
+    Optional<Alliance> alliance=DriverStation.getAlliance();
+    boolean isRedAlliance=true;
+    boolean isAuto = DriverStation.isAutonomous();
+    if(alliance.equals(Alliance.Blue)){
+      isRedAlliance=false;
+    }
+
+    
+    // if (!ferraUiTable.getEntry("matchNumber").setInteger(DriverStation.getMatchNumber())){
+    //   System.err.println("Error writing match number to /ferraui/matchNumber");
+    // }
+
+    // if (!ferraUiTable.getEntry("matchType").setString(DriverStation.getMatchType().toString())){
+    //   System.err.println("Error writing match type to /ferraui/matchType");
+    // }
+
+    if (!ferraUiTable.getEntry("gameSpecificMessage").setString(DriverStation.getGameSpecificMessage())){
+      System.err.println("Error writing game specific message to /ferraui/gameSpecificMessage");
+    }
+
+    if (!ferraUiTable.getEntry("isRedAlliance").setBoolean(isRedAlliance)){
+      System.err.println("Error writing alliance to /ferraui/isRedAlliance");
+    }
+    
+    if (!ferraUiTable.getEntry("batteryVoltage").setDouble(batteryVoltage)){
+      System.err.println("Error writing battery voltage to /ferraui/batteryVoltage");
+    }
+   
+    if (!ferraUiTable.getEntry("matchTime").setDouble(matchTime)){
+      System.err.println("Error writing match time to /ferraui/matchTime");
+    }
+
+    if (!ferraUiTable.getEntry("isAuto").setBoolean(isAuto)) {
+      System.err.println("Error writing is auto to /ferraui/matchTime");
+    }
   }
 
   /** This function is called once when the robot is disabled. */
